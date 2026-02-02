@@ -1,15 +1,18 @@
 /**
  * Ingest content/resume.md and content/projects.json into a local embedding store.
- * Chunks text, calls Ollama nomic-embed-text, writes to data/embeddings.json.
+ * When OPENAI_API_KEY is set: uses OpenAI text-embedding-3-small, writes to data/embeddings.json.
+ * Otherwise: uses Ollama nomic-embed-text (requires Ollama running: ollama pull nomic-embed-text).
  *
  * Run: npm run ingest
- * Requires: Ollama running locally with nomic-embed-text pulled (ollama pull nomic-embed-text)
+ * For production: set OPENAI_API_KEY, run ingest, commit data/embeddings.json.
  */
 import * as fs from "fs/promises";
 import * as path from "path";
 
+const useOpenAI = Boolean(process.env.OPENAI_API_KEY);
 const OLLAMA_URL = process.env.OLLAMA_URL ?? "http://localhost:11434";
-const EMBED_MODEL = "nomic-embed-text";
+const OLLAMA_EMBED_MODEL = "nomic-embed-text";
+const OPENAI_EMBED_MODEL = "text-embedding-3-small";
 const ROOT = process.cwd();
 const CONTENT_DIR = path.join(ROOT, "content");
 const DATA_DIR = path.join(ROOT, "data");
@@ -27,12 +30,12 @@ function genId(): string {
   return `chunk_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
-async function embed(texts: string[]): Promise<number[][]> {
+async function embedOllama(texts: string[]): Promise<number[][]> {
   const res = await fetch(`${OLLAMA_URL}/api/embed`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: EMBED_MODEL,
+      model: OLLAMA_EMBED_MODEL,
       input: texts.length === 1 ? texts[0] : texts,
     }),
   });
@@ -42,6 +45,27 @@ async function embed(texts: string[]): Promise<number[][]> {
   }
   const j = (await res.json()) as { embeddings: number[][] };
   return j.embeddings;
+}
+
+async function embedOpenAI(texts: string[]): Promise<number[][]> {
+  const res = await fetch("https://api.openai.com/v1/embeddings", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({ model: OPENAI_EMBED_MODEL, input: texts }),
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`OpenAI embed failed: ${res.status} ${t}`);
+  }
+  const j = (await res.json()) as { data: Array<{ embedding: number[] }> };
+  return j.data.map((d) => d.embedding);
+}
+
+async function embed(texts: string[]): Promise<number[][]> {
+  return useOpenAI ? embedOpenAI(texts) : embedOllama(texts);
 }
 
 function chunkResume(md: string): string[] {
@@ -57,9 +81,10 @@ function chunkResume(md: string): string[] {
 
 async function main() {
   await fs.mkdir(DATA_DIR, { recursive: true });
+  console.log(`Using ${useOpenAI ? "OpenAI " + OPENAI_EMBED_MODEL : "Ollama " + OLLAMA_EMBED_MODEL} for embeddings.`);
 
   const chunks: Chunk[] = [];
-  const BATCH = 5;
+  const BATCH = useOpenAI ? 100 : 5;
 
   // Resume
   const resumePath = path.join(CONTENT_DIR, "resume.md");

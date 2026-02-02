@@ -30,5 +30,6 @@ yarn-error.log*
 chroma_db
 *.chroma
 
-# local embedding store (run npm run ingest to generate)
-data/
+# local embedding store (run npm run ingest to generate); allow data/embeddings.json for production
+data/*
+!data/embeddings.json

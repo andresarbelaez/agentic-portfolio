@@ -1,12 +1,15 @@
 /**
- * Load data/embeddings.json, embed query via Ollama, return top-k chunks by cosine similarity.
+ * Load data/embeddings.json, embed query via OpenAI or Ollama, return top-k chunks by cosine similarity.
  * Used by app/api/chat/route.ts.
+ * When OPENAI_API_KEY is set, uses OpenAI text-embedding-3-small; otherwise Ollama nomic-embed-text.
  */
 import * as fs from "fs/promises";
 import * as path from "path";
 
+const useOpenAI = Boolean(process.env.OPENAI_API_KEY);
 const OLLAMA_URL = process.env.OLLAMA_URL ?? "http://localhost:11434";
-const EMBED_MODEL = "nomic-embed-text";
+const OLLAMA_EMBED_MODEL = "nomic-embed-text";
+const OPENAI_EMBED_MODEL = "text-embedding-3-small";
 const DEFAULT_TOP_K = 6;
 
 export type StoredChunk = {
@@ -31,15 +34,36 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return den === 0 ? 0 : dot / den;
 }
 
-async function embedQuery(query: string): Promise<number[]> {
+async function embedQueryOllama(query: string): Promise<number[]> {
   const res = await fetch(`${OLLAMA_URL}/api/embed`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: EMBED_MODEL, input: query }),
+    body: JSON.stringify({ model: OLLAMA_EMBED_MODEL, input: query }),
   });
   if (!res.ok) throw new Error(`Ollama embed failed: ${res.status}`);
   const j = (await res.json()) as { embeddings: number[][] };
   return j.embeddings[0];
+}
+
+async function embedQueryOpenAI(query: string): Promise<number[]> {
+  const res = await fetch("https://api.openai.com/v1/embeddings", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({ model: OPENAI_EMBED_MODEL, input: query }),
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`OpenAI embed failed: ${res.status} ${t}`);
+  }
+  const j = (await res.json()) as { data: Array<{ embedding: number[] }> };
+  return j.data[0].embedding;
+}
+
+async function embedQuery(query: string): Promise<number[]> {
+  return useOpenAI ? embedQueryOpenAI(query) : embedQueryOllama(query);
 }
 
 export async function findRelevantChunks(
