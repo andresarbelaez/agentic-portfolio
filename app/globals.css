@@ -63,3 +63,12 @@ input.cursor-text {
 .notepad-video-wrapper:hover video::-webkit-media-controls-enclosure {
   opacity: 1;
 }
+
+/* XP title bar buttons: silver hover for min/max, more saturated red for close */
+.xp-title-btn-min:hover,
+.xp-title-btn-max:hover {
+  background: #d8d8d8 !important;
+}
+.xp-title-btn-close:hover {
+  background: #e74c3c !important;
+}

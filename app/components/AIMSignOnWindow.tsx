@@ -3,6 +3,9 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { iconPath } from "@/lib/icons";
 import { FONT_XP_UI, FONT_SIZE_XP } from "@/lib/xp-fonts";
+import { XPTitleBarButtons } from "./XPTitleBarButtons";
+
+const TASKBAR_HEIGHT = 36;
 
 /** AIM running-man logo: yellow stick figure mid-stride (XP-era style) */
 function RunningManIcon({
@@ -92,6 +95,8 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [restoreRect, setRestoreRect] = useState<{ x: number; y: number } | null>(null);
   const [useAimFallback, setUseAimFallback] = useState(false);
   const [useHelpFallback, setUseHelpFallback] = useState(false);
   const [useSetupFallback, setUseSetupFallback] = useState(false);
@@ -127,17 +132,29 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
     };
   }, []);
 
+  const toggleMaximize = useCallback(() => {
+    if (isMaximized && restoreRect) {
+      setPos({ x: restoreRect.x, y: restoreRect.y });
+      setRestoreRect(null);
+      setIsMaximized(false);
+    } else {
+      setRestoreRect({ x: pos.x, y: pos.y });
+      setPos({ x: 0, y: 0 });
+      setIsMaximized(true);
+    }
+  }, [isMaximized, restoreRect, pos.x, pos.y]);
+
   const handleTitleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if ((e.target as HTMLElement).closest("button")) return;
+      if ((e.target as HTMLElement).closest("button") || isMaximized) return;
       setIsDragging(true);
       dragStart.current = { x: e.clientX, y: e.clientY, left: pos.x, top: pos.y };
     },
-    [pos.x, pos.y]
+    [pos.x, pos.y, isMaximized]
   );
 
   useEffect(() => {
-    if (!isDragging) return;
+    if (!isDragging || isMaximized) return;
     const onMove = (e: MouseEvent) => {
       const dx = e.clientX - dragStart.current.x;
       const dy = e.clientY - dragStart.current.y;
@@ -155,7 +172,7 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
     };
-  }, [isDragging]);
+  }, [isDragging, isMaximized]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,14 +196,14 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
       aria-label="AOL Sign On"
       style={{
         position: "fixed",
-        left: pos.x,
-        top: pos.y,
-        width: SIGNON_WIDTH,
-        minHeight: isProgress ? 280 : SIGNON_HEIGHT,
+        left: isMaximized ? 0 : pos.x,
+        top: isMaximized ? 0 : pos.y,
+        width: isMaximized ? (typeof window !== "undefined" ? window.innerWidth : 800) : SIGNON_WIDTH,
+        minHeight: isMaximized ? (typeof window !== "undefined" ? window.innerHeight - TASKBAR_HEIGHT : 564) : (isProgress ? 280 : SIGNON_HEIGHT),
         fontFamily: FONT_XP_UI,
-        borderRadius: "8px 8px 0 0",
-        boxShadow: "2px 2px 12px rgba(0,0,0,0.4)",
-        border: "1px solid #003cda",
+        borderRadius: isMaximized ? 0 : "8px 8px 0 0",
+        boxShadow: "1px 1px 0 #3a6ea5, 2px 2px 12px rgba(0,0,0,0.25)",
+        border: "1px solid #3a6ea5",
         overflow: "hidden",
         zIndex: 60,
         display: "flex",
@@ -199,7 +216,7 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
       <div
         onMouseDown={handleTitleMouseDown}
         style={{
-          height: 28,
+          height: 22,
           background: XP_TITLE_GRADIENT,
           borderBottom: "1px solid #003cda",
           display: "flex",
@@ -207,7 +224,7 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
           justifyContent: "space-between",
           paddingLeft: 6,
           paddingRight: 2,
-          cursor: "move",
+          cursor: isMaximized ? "default" : "move",
           flexShrink: 0,
           fontFamily: FONT_XP_UI,
         }}
@@ -221,11 +238,7 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
           )}
           <span style={{ color: "#fff", fontSize: FONT_SIZE_XP.title, fontWeight: 600, fontFamily: FONT_XP_UI }}>Sign On</span>
         </div>
-        <div style={{ display: "flex" }}>
-          <button type="button" aria-label="Minimize" style={btnTitle}>−</button>
-          <button type="button" aria-label="Maximize" style={btnTitle}>□</button>
-          <button type="button" aria-label="Close" onClick={onClose} style={{ ...btnTitle, background: "rgba(200,60,60,0.9)" }}>×</button>
-        </div>
+        <XPTitleBarButtons onMaximize={toggleMaximize} onClose={onClose} isMaximized={isMaximized} />
       </div>
 
       {/* Blue branding panel */}
@@ -361,19 +374,6 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
   );
 }
 
-const btnTitle: React.CSSProperties = {
-  width: 24,
-  height: 22,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "#fff",
-  background: "transparent",
-  border: "none",
-  cursor: "pointer",
-  fontSize: FONT_SIZE_XP.title,
-  fontFamily: FONT_XP_UI,
-};
 const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "4px 6px",

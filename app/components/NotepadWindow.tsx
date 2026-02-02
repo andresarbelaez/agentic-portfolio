@@ -4,7 +4,10 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { iconPath } from "@/lib/icons";
 import { FONT_XP_UI, FONT_NOTEPAD, FONT_SIZE_XP } from "@/lib/xp-fonts";
+import { XPTitleBarButtons } from "./XPTitleBarButtons";
 import type { Project } from "@/types/project";
+
+const TASKBAR_HEIGHT = 36;
 
 const XP_TITLE_GRADIENT = "linear-gradient(180deg, #0054e3 0%, #0047d0 50%, #003cba 100%)";
 
@@ -125,21 +128,40 @@ export function NotepadWindow({
   const [size, setSize] = useState({ width: NOTEPAD_WIDTH, height: NOTEPAD_HEIGHT });
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [restoreRect, setRestoreRect] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const [useNotepadIconFallback, setUseNotepadIconFallback] = useState(false);
   const dragStart = useRef({ x: 0, y: 0, left: 0, top: 0 });
   const resizeStart = useRef({ x: 0, y: 0, width: 0, height: 0 });
 
+  const toggleMaximize = useCallback(() => {
+    if (isMaximized && restoreRect) {
+      setPos({ x: restoreRect.x, y: restoreRect.y });
+      setSize({ width: restoreRect.width, height: restoreRect.height });
+      setRestoreRect(null);
+      setIsMaximized(false);
+    } else {
+      setRestoreRect({ x: pos.x, y: pos.y, width: size.width, height: size.height });
+      setPos({ x: 0, y: 0 });
+      setSize({
+        width: typeof window !== "undefined" ? window.innerWidth : 800,
+        height: typeof window !== "undefined" ? window.innerHeight - TASKBAR_HEIGHT : 564,
+      });
+      setIsMaximized(true);
+    }
+  }, [isMaximized, restoreRect, pos.x, pos.y, size.width, size.height]);
+
   const handleTitleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if ((e.target as HTMLElement).closest("button")) return;
+      if ((e.target as HTMLElement).closest("button") || isMaximized) return;
       setIsDragging(true);
       dragStart.current = { x: e.clientX, y: e.clientY, left: pos.x, top: pos.y };
     },
-    [pos.x, pos.y]
+    [pos.x, pos.y, isMaximized]
   );
 
   useEffect(() => {
-    if (!isDragging && !isResizing) return;
+    if ((!isDragging && !isResizing) || isMaximized) return;
     const onMove = (e: MouseEvent) => {
       if (isDragging) {
         const dx = e.clientX - dragStart.current.x;
@@ -170,7 +192,7 @@ export function NotepadWindow({
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
     };
-  }, [isDragging, isResizing, size.width, pos.x, pos.y]);
+  }, [isDragging, isResizing, isMaximized, size.width, pos.x, pos.y]);
 
   const handleResizeMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -186,19 +208,19 @@ export function NotepadWindow({
 
   const containerStyle: React.CSSProperties = {
     position: "fixed",
-    left: pos.x,
-    top: pos.y,
+    left: isMaximized ? 0 : pos.x,
+    top: isMaximized ? 0 : pos.y,
     width: size.width,
     height: size.height,
-    minWidth: MIN_WIDTH,
-    minHeight: MIN_HEIGHT,
+    minWidth: isMaximized ? undefined : MIN_WIDTH,
+    minHeight: isMaximized ? undefined : MIN_HEIGHT,
     display: hidden ? "none" : "flex",
     flexDirection: "column",
     fontFamily: FONT_XP_UI,
     fontSize: FONT_SIZE_XP.title,
-    borderRadius: "8px 8px 0 0",
-    boxShadow: "2px 2px 10px rgba(0,0,0,0.35)",
-    border: "1px solid #003cda",
+    borderRadius: isMaximized ? 0 : "8px 8px 0 0",
+    boxShadow: "1px 1px 0 #3a6ea5, 2px 2px 10px rgba(0,0,0,0.25)",
+    border: "1px solid #3a6ea5",
     overflow: "hidden",
     zIndex,
     ...style,
@@ -210,10 +232,12 @@ export function NotepadWindow({
       <div
         role="presentation"
         onMouseDown={handleTitleMouseDown}
-        className="flex items-center justify-between pl-2 pr-1 h-7 cursor-move select-none flex-shrink-0 text-white"
+        className="flex items-center justify-between pl-2 pr-1 select-none flex-shrink-0 text-white"
         style={{
+          height: 22,
           background: XP_TITLE_GRADIENT,
           borderBottom: "1px solid #003cda",
+          cursor: isMaximized ? "default" : "move",
         }}
       >
         <div className="flex items-center gap-2 min-w-0">
@@ -226,31 +250,12 @@ export function NotepadWindow({
           </span>
           <span className="truncate">{title}</span>
         </div>
-        <div className="flex items-center flex-shrink-0">
-          <button
-            type="button"
-            aria-label="Minimize"
-            onClick={onMinimize}
-            className="w-6 h-5 flex items-center justify-center text-white hover:bg-white/20 border border-transparent rounded-sm"
-          >
-            −
-          </button>
-          <button
-            type="button"
-            aria-label="Maximize"
-            className="w-6 h-5 flex items-center justify-center text-white hover:bg-white/20 border border-transparent rounded-sm"
-          >
-            □
-          </button>
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={onClose}
-            className="w-6 h-5 flex items-center justify-center text-white hover:bg-red-600 border border-transparent rounded-sm"
-          >
-            ×
-          </button>
-        </div>
+        <XPTitleBarButtons
+          onMinimize={onMinimize}
+          onMaximize={toggleMaximize}
+          onClose={onClose}
+          isMaximized={isMaximized}
+        />
       </div>
 
       {/* Menu bar */}
@@ -358,18 +363,19 @@ export function NotepadWindow({
         )}
       </div>
 
-      {/* Bottom scrollbar hint / status — XP Notepad often had a status strip; we use simple border */}
+      {/* Bottom scrollbar hint / status — XP Notepad often had a status strip; we use simple border. Resize handle hidden when maximized. */}
       <div className="h-0.5 flex-shrink-0 bg-[#ece9d8] relative" aria-hidden>
-        {/* Resize handle - Windows XP style diagonal lines */}
-        <div
-          onMouseDown={handleResizeMouseDown}
-          className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize hover:bg-white/20"
-          style={{
-            backgroundImage: "repeating-linear-gradient(135deg, transparent, transparent 2px, #999 2px, #999 3px)",
-            backgroundSize: "8px 8px",
-          }}
-          title="Resize"
-        />
+        {!isMaximized && (
+          <div
+            onMouseDown={handleResizeMouseDown}
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize hover:bg-white/20"
+            style={{
+              backgroundImage: "repeating-linear-gradient(135deg, transparent, transparent 2px, #999 2px, #999 3px)",
+              backgroundSize: "8px 8px",
+            }}
+            title="Resize"
+          />
+        )}
       </div>
     </div>
   );

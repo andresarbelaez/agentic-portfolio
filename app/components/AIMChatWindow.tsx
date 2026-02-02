@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { iconPath } from "@/lib/icons";
 import { FONT_AIM, FONT_SIZE_XP } from "@/lib/xp-fonts";
 import { ChatBlock } from "./ChatBlock";
+import { XPTitleBarButtons } from "./XPTitleBarButtons";
 
 type AIMChatWindowProps = {
   screenName?: string;
@@ -26,10 +27,14 @@ type AIMChatWindowProps = {
 const WINDOW_WIDTH = 420;
 const WINDOW_HEIGHT = 420;
 
+const TASKBAR_HEIGHT = 36;
+
 export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, onClose, hidden = false, style, zIndex = 50, onBringToFront, chatKey, onOpenProject, projects }: AIMChatWindowProps) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [restoreRect, setRestoreRect] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const [useAimIconFallback, setUseAimIconFallback] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dragStart = useRef({ x: 0, y: 0, left: 0, top: 0 });
@@ -43,17 +48,29 @@ export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, on
     setMounted(true);
   }, []);
 
+  const toggleMaximize = useCallback(() => {
+    if (isMaximized && restoreRect) {
+      setPos({ x: restoreRect.x, y: restoreRect.y });
+      setRestoreRect(null);
+      setIsMaximized(false);
+    } else {
+      setRestoreRect({ x: pos.x, y: pos.y, width: WINDOW_WIDTH, height: WINDOW_HEIGHT });
+      setPos({ x: 0, y: 0 });
+      setIsMaximized(true);
+    }
+  }, [isMaximized, restoreRect, pos.x, pos.y]);
+
   const handleTitleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if ((e.target as HTMLElement).closest("button")) return;
+      if ((e.target as HTMLElement).closest("button") || isMaximized) return;
       setIsDragging(true);
       dragStart.current = { x: e.clientX, y: e.clientY, left: pos.x, top: pos.y };
     },
-    [pos.x, pos.y]
+    [pos.x, pos.y, isMaximized]
   );
 
   useEffect(() => {
-    if (!isDragging) return;
+    if (!isDragging || isMaximized) return;
     const handleMouseMove = (e: MouseEvent) => {
       const dx = e.clientX - dragStart.current.x;
       const dy = e.clientY - dragStart.current.y;
@@ -71,24 +88,24 @@ export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, on
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, isMaximized]);
 
   if (!mounted) return null;
 
   const containerStyle: React.CSSProperties = {
     position: "fixed",
-    left: pos.x,
-    top: pos.y,
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-    minWidth: WINDOW_WIDTH,
-    minHeight: WINDOW_HEIGHT,
+    left: isMaximized ? 0 : pos.x,
+    top: isMaximized ? 0 : pos.y,
+    width: isMaximized ? (typeof window !== "undefined" ? window.innerWidth : 800) : WINDOW_WIDTH,
+    height: isMaximized ? (typeof window !== "undefined" ? window.innerHeight - TASKBAR_HEIGHT : 564) : WINDOW_HEIGHT,
+    minWidth: isMaximized ? undefined : WINDOW_WIDTH,
+    minHeight: isMaximized ? undefined : WINDOW_HEIGHT,
     display: hidden ? "none" : "flex",
     flexDirection: "column",
     fontFamily: FONT_AIM,
-    borderRadius: "8px 8px 0 0",
-    boxShadow: "2px 2px 8px rgba(0,0,0,0.3)",
-    border: "1px solid #003cda",
+    borderRadius: isMaximized ? 0 : "8px 8px 0 0",
+    boxShadow: "1px 1px 0 #3a6ea5, 2px 2px 8px rgba(0,0,0,0.25)",
+    border: "1px solid #3a6ea5",
     overflow: "hidden",
     zIndex,
     cursor: isLoading ? "url('/cursors/cursor-loading.png') 0 0, url('/cursors/cursor.png') 0 0, wait" : undefined,
@@ -103,14 +120,16 @@ export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, on
       role="dialog"
       data-loading={isLoading}
     >
-      {/* Title bar - draggable */}
+      {/* Title bar - draggable (unless maximized) */}
       <div
         role="presentation"
         onMouseDown={handleTitleMouseDown}
-        className="flex items-center justify-between px-2 h-7 cursor-move select-none flex-shrink-0 text-white text-sm"
+        className="flex items-center justify-between px-2 select-none flex-shrink-0 text-white text-sm"
         style={{
+          height: 22,
           background: "linear-gradient(180deg, #0054e3 0%, #0047d0 50%, #003cba 100%)",
           borderBottom: "1px solid #003cda",
+          cursor: isMaximized ? "default" : "move",
         }}
       >
         <div className="flex items-center gap-2 min-w-0">
@@ -130,27 +149,12 @@ export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, on
           )}
           <span className="truncate">AOL Instant Message: L-997 - Instant Message</span>
         </div>
-        <div className="flex items-center flex-shrink-0">
-          <button
-            type="button"
-            aria-label="Minimize"
-            onClick={onMinimize}
-            className="w-6 h-5 flex items-center justify-center text-white hover:bg-white/20 border border-transparent rounded-sm"
-          >
-            −
-          </button>
-          <button type="button" aria-label="Maximize" className="w-6 h-5 flex items-center justify-center text-white hover:bg-white/20 border border-transparent rounded-sm">
-            □
-          </button>
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={onClose}
-            className="w-6 h-5 flex items-center justify-center text-white hover:bg-red-600 border border-transparent rounded-sm"
-          >
-            ×
-          </button>
-        </div>
+        <XPTitleBarButtons
+          onMinimize={onMinimize}
+          onMaximize={toggleMaximize}
+          onClose={onClose}
+          isMaximized={isMaximized}
+        />
       </div>
 
       {/* Menu bar */}
