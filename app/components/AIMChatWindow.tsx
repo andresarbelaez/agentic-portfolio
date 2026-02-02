@@ -150,7 +150,7 @@ export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, on
               onError={() => setUseAimIconFallback(true)}
             />
           )}
-          <span className="truncate">AOL Instant Message: L-997 - Instant Message</span>
+          <span className="truncate">AiOL Instant Message: L-997 - Instant Message</span>
         </div>
         <XPTitleBarButtons
           onMinimize={onMinimize}

@@ -23,6 +23,22 @@ const AIM_INTRO_MESSAGES = [
 
 const PROJECT_LINK_PREFIX = "project:";
 
+/**
+ * Inject clickable project links into message text: any exact match of a project title
+ * becomes [Title](project:slug) so ReactMarkdown + our link handler open the project.
+ * Sort by title length descending so we match "Design System for Meta Ads' Lift" before "Design System".
+ */
+function injectProjectLinks(text: string, projects: Array<{ title: string; slug: string }>): string {
+  if (!projects.length) return text;
+  const byLength = [...projects].sort((a, b) => b.title.length - a.title.length);
+  let result = text;
+  for (const p of byLength) {
+    if (!p.title.trim()) continue;
+    result = result.split(p.title).join(`[${p.title}](project:${p.slug})`);
+  }
+  return result;
+}
+
 type ChatBlockProps = {
   embedded?: boolean;
   embeddedLayout?: "default" | "aim";
@@ -229,7 +245,7 @@ export function ChatBlock({
                         li: ({ children }) => <li className="leading-relaxed">{children}</li>,
                       }}
                     >
-                      {messageText(m).trim()}
+                      {injectProjectLinks(messageText(m).trim(), projects)}
                     </ReactMarkdown>
                   </span>
                 )}
@@ -264,7 +280,7 @@ export function ChatBlock({
                       li: ({ children }) => <li className="leading-relaxed">{children}</li>,
                     }}
                   >
-                    {messageText(m)}
+                    {injectProjectLinks(messageText(m), projects)}
                   </ReactMarkdown>
                 </div>
               )}

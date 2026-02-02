@@ -193,7 +193,7 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
   return (
     <div
       role="dialog"
-      aria-label="AOL Sign On"
+      aria-label="AiOL Sign On"
       style={{
         position: "fixed",
         left: isMaximized ? 0 : pos.x,
@@ -260,7 +260,7 @@ export function AIMSignOnWindow({ onSignOnSuccess, onClose }: AIMSignOnWindowPro
           <img src={iconPath("aim")} alt="" width={56} height={56} onError={() => setUseAimFallback(true)} style={{ display: "block" }} />
         )}
         <div style={{ color: "#fff", marginTop: 6, textAlign: "center" }}>
-          <span style={{ fontSize: FONT_SIZE_XP.standard, fontFamily: FONT_XP_UI }}>AOL</span>
+          <span style={{ fontSize: FONT_SIZE_XP.standard, fontFamily: FONT_XP_UI }}>AiOL</span>
           <br />
           <span style={{ fontSize: FONT_SIZE_XP.title, fontWeight: "bold", fontFamily: FONT_XP_UI }}>Instant Messenger</span>
         </div>

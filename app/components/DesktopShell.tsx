@@ -56,7 +56,7 @@ function AOLIcon({ className }: { className?: string }) {
   return (
     <img
       src={iconPath("aol")}
-      alt="AOL Instant Messenger"
+      alt="AiOL Instant Messenger"
       className={className}
       width={32}
       height={32}
@@ -162,7 +162,7 @@ export function DesktopShell({ projects }: { projects: Project[] }) {
           alignContent: "start",
         }}
       >
-        {/* AOL Instant Messenger desktop icon */}
+        {/* AiOL Instant Messenger desktop icon */}
         <button
           type="button"
           onClick={() => {
@@ -184,7 +184,7 @@ export function DesktopShell({ projects }: { projects: Project[] }) {
               textShadow: "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 2px #000, 0 0 2px #000",
             }}
           >
-            AOL Instant Messenger
+            AiOL Instant Messenger
           </span>
         </button>
 
@@ -248,7 +248,7 @@ export function DesktopShell({ projects }: { projects: Project[] }) {
         />
       )}
 
-      {/* AOL Sign On — hidden when starting with chat open; kept for possible future flow */}
+      {/* AiOL Sign On — hidden when starting with chat open; kept for possible future flow */}
       {!loggedIn && (
         <AIMSignOnWindow
           onSignOnSuccess={(name) => {
