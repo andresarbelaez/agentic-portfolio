@@ -119,6 +119,7 @@ async function main() {
   for (const p of projects) {
     const content = [
       `Project: ${p.title}`,
+      `Slug (for project links): ${p.slug}`,
       `URL: ${p.url}`,
       `Summary: ${p.summary}`,
       `Skills: ${(p.skills || []).join(", ")}`,

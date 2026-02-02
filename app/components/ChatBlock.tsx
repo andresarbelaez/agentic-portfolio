@@ -18,6 +18,8 @@ function messageText(m: { content?: unknown; parts?: Array<{ type?: string; text
 const AIM_DEFAULT_MESSAGE =
   "Hello! I'm L-997, I'm your guide to this website, Andres's portfolio. What would you like to know about him? I'm happy to answer questions and/or point you to the right project.";
 
+const PROJECT_LINK_PREFIX = "project:";
+
 type ChatBlockProps = {
   embedded?: boolean;
   embeddedLayout?: "default" | "aim";
@@ -27,6 +29,8 @@ type ChatBlockProps = {
   aimAssistantLabel?: string;
   /** Callback when busy state changes (for loading cursor) */
   onBusyChange?: (busy: boolean) => void;
+  /** When user clicks a project link in chat (format [title](project:slug)), open that project in Notepad */
+  onOpenProject?: (slug: string) => void;
 };
 
 export function ChatBlock({
@@ -35,7 +39,36 @@ export function ChatBlock({
   aimUserLabel = "You",
   aimAssistantLabel = "L-997",
   onBusyChange,
+  onOpenProject,
 }: ChatBlockProps = {}) {
+  const isProjectLink = (href: string | undefined) => typeof href === "string" && href.startsWith(PROJECT_LINK_PREFIX);
+  const projectSlug = (href: string) => href.slice(PROJECT_LINK_PREFIX.length);
+
+  const linkComponent = {
+    a: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+      if (isProjectLink(href) && onOpenProject) {
+        return (
+          <a
+            href="#"
+            role="button"
+            className="text-[#0054e3] underline cursor-pointer hover:text-[#003cba]"
+            onClick={(e) => {
+              e.preventDefault();
+              onOpenProject(projectSlug(href!));
+            }}
+            {...props}
+          >
+            {children}
+          </a>
+        );
+      }
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" className="text-[#0054e3] underline hover:text-[#003cba]" {...props}>
+          {children}
+        </a>
+      );
+    },
+  };
   const [input, setInput] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const { messages, sendMessage, status } = useChat({
@@ -132,6 +165,7 @@ export function ChatBlock({
                   <span className="text-black [&>*:last-child]:mb-0 [&>*:first-child]:mt-0 [&>*:first-child]:inline">
                     <ReactMarkdown
                       components={{
+                        ...linkComponent,
                         p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
                         strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                         ul: ({ children }) => <ul className="list-disc pl-4 space-y-0.5 my-1">{children}</ul>,
@@ -166,6 +200,7 @@ export function ChatBlock({
                 <div className="[&>*:last-child]:mb-0">
                   <ReactMarkdown
                     components={{
+                      ...linkComponent,
                       p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
                       strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                       ul: ({ children }) => <ul className="list-disc pl-4 space-y-0.5 my-2">{children}</ul>,

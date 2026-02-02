@@ -268,6 +268,14 @@ export function DesktopShell({ projects }: { projects: Project[] }) {
           zIndex={frontWindow === "aim" ? 55 : 50}
           onBringToFront={() => setFrontWindow("aim")}
           chatKey={aimChatKey}
+          onOpenProject={(slug) => {
+            const p = projects.find((pr) => pr.slug === slug);
+            if (p) {
+              setNotepadProject(p);
+              setNotepadMinimized(false);
+              setFrontWindow("notepad");
+            }
+          }}
         />
       )}
 
