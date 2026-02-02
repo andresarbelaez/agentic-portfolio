@@ -219,8 +219,8 @@ export function NotepadWindow({
     fontFamily: FONT_XP_UI,
     fontSize: FONT_SIZE_XP.title,
     borderRadius: isMaximized ? 0 : "8px 8px 0 0",
-    boxShadow: "1px 1px 0 #3a6ea5, 2px 2px 10px rgba(0,0,0,0.25)",
-    border: "1px solid #3a6ea5",
+    boxShadow: "2px 2px 0 #3a6ea5, 2px 2px 10px rgba(0,0,0,0.25)",
+    border: "2px solid #3a6ea5",
     overflow: "hidden",
     zIndex,
     ...style,
@@ -234,7 +234,10 @@ export function NotepadWindow({
         onMouseDown={handleTitleMouseDown}
         className="flex items-center justify-between pl-2 pr-1 select-none flex-shrink-0 text-white"
         style={{
-          height: 22,
+          height: 26,
+          paddingTop: 2,
+          paddingBottom: 2,
+          paddingRight: 8,
           background: XP_TITLE_GRADIENT,
           borderBottom: "1px solid #003cda",
           cursor: isMaximized ? "default" : "move",

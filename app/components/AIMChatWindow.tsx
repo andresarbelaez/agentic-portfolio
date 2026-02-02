@@ -104,8 +104,8 @@ export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, on
     flexDirection: "column",
     fontFamily: FONT_AIM,
     borderRadius: isMaximized ? 0 : "8px 8px 0 0",
-    boxShadow: "1px 1px 0 #3a6ea5, 2px 2px 8px rgba(0,0,0,0.25)",
-    border: "1px solid #3a6ea5",
+    boxShadow: "2px 2px 0 #3a6ea5, 2px 2px 8px rgba(0,0,0,0.25)",
+    border: "2px solid #3a6ea5",
     overflow: "hidden",
     zIndex,
     cursor: isLoading ? "url('/cursors/cursor-loading.png') 0 0, url('/cursors/cursor.png') 0 0, wait" : undefined,
@@ -126,7 +126,10 @@ export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, on
         onMouseDown={handleTitleMouseDown}
         className="flex items-center justify-between px-2 select-none flex-shrink-0 text-white text-sm"
         style={{
-          height: 22,
+          height: 26,
+          paddingTop: 2,
+          paddingBottom: 2,
+          paddingRight: 8,
           background: "linear-gradient(180deg, #0054e3 0%, #0047d0 50%, #003cba 100%)",
           borderBottom: "1px solid #003cda",
           cursor: isMaximized ? "default" : "move",

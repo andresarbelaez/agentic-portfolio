@@ -7,7 +7,6 @@
 const BTN_SIZE = 21;
 const BTN_FILL = "rgba(255, 255, 255, 0.13)";
 const BTN_CLOSE_FILL = "#c0392b";
-const BTN_ICON = "#2b2b2b";
 
 const btnBase: React.CSSProperties = {
   width: BTN_SIZE,
@@ -21,7 +20,7 @@ const btnBase: React.CSSProperties = {
   padding: 0,
   flexShrink: 0,
   background: BTN_FILL,
-  color: BTN_ICON,
+  color: "#fff",
 };
 
 type XPTitleBarButtonsProps = {
@@ -33,7 +32,7 @@ type XPTitleBarButtonsProps = {
 
 export function XPTitleBarButtons({ onMinimize, onMaximize, onClose, isMaximized = false }: XPTitleBarButtonsProps) {
   return (
-    <div style={{ display: "flex", flexShrink: 0 }}>
+    <div style={{ display: "flex", flexShrink: 0, gap: 6 }}>
       <button
         type="button"
         aria-label="Minimize"
@@ -41,8 +40,8 @@ export function XPTitleBarButtons({ onMinimize, onMaximize, onClose, isMaximized
         style={btnBase}
         className="xp-title-btn-min"
       >
-        <svg width={10} height={2} viewBox="0 0 10 2" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
-          <line x1="0" y1="1" x2="10" y2="1" />
+        <svg width={10} height={5} viewBox="0 0 10 5" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+          <line x1="0" y1="4" x2="10" y2="4" />
         </svg>
       </button>
       <button

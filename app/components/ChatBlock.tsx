@@ -16,9 +16,9 @@ function messageText(m: { content?: unknown; parts?: Array<{ type?: string; text
 
 /** Intro messages from the agent at the start of every AIM chat (shown in sequence, then real messages) */
 const AIM_INTRO_MESSAGES = [
-  "Hello! I'm L-997, your guide to Andres' portfolio.",
+  "Hello! I'm L-997, your guide to andresma.com.",
   "Andres Arbelaez is a design technologist who has shipped design and code at Meta and IDEO.",
-  "What area of his portfolio would you like to explore?",
+  "What would you like to know about Andres?",
 ] as const;
 
 const PROJECT_LINK_PREFIX = "project:";
