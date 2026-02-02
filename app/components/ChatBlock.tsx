@@ -16,7 +16,7 @@ function messageText(m: { content?: unknown; parts?: Array<{ type?: string; text
 
 /** Default message from the agent at the start of every AIM chat */
 const AIM_DEFAULT_MESSAGE =
-  "Hello! I'm L-997, I'm your guide to this website, Andres's portfolio. What would you like to know about him? I'm happy to answer questions and/or point you to the right project.";
+  "Hello! I'm L-997, your guide to Andres' portfolio. Andres Arbelaez is a design technologist who has shipped design and code at companies like Meta and IDEO. What area of his portfolio would you like to explore?";
 
 const PROJECT_LINK_PREFIX = "project:";
 
