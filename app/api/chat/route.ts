@@ -1,17 +1,22 @@
 import { findRelevantChunks } from "@/lib/retrieve";
 import { streamText, convertToModelMessages, generateId } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { createOllama } from "ollama-ai-provider-v2";
 import * as fs from "fs/promises";
 import * as path from "path";
 
 export const maxDuration = 30;
 
+const useOpenAI = Boolean(process.env.OPENAI_API_KEY);
+const openai = createOpenAI();
+
 const ollamaBase = process.env.OLLAMA_URL ?? "http://localhost:11434";
 const ollama = createOllama({
   baseURL: ollamaBase.replace(/\/?$/, "") + "/api",
 });
 
-const CHAT_MODEL = process.env.OLLAMA_CHAT_MODEL ?? "llama3.2";
+const OPENAI_CHAT_MODEL = process.env.OPENAI_CHAT_MODEL ?? "gpt-4o-mini";
+const OLLAMA_CHAT_MODEL = process.env.OLLAMA_CHAT_MODEL ?? "llama3.2";
 
 async function loadSystemPrompt(): Promise<string> {
   const p = path.join(process.cwd(), "content", "agent-system-prompt.md");
@@ -40,6 +45,17 @@ function lastUserText(messages: Array<{ role?: string; content?: unknown; parts?
 
 export async function POST(req: Request) {
   try {
+    if (process.env.NODE_ENV === "production" && !process.env.OPENAI_API_KEY) {
+      console.error("[chat route] OPENAI_API_KEY is not set in production");
+      return new Response(
+        JSON.stringify({
+          error:
+            "OpenAI API key is not configured. Add OPENAI_API_KEY in Vercel → Project → Settings → Environment Variables for Production, then redeploy.",
+        }),
+        { status: 503, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     const body = (await req.json()) as { messages?: Array<{ role?: string; content?: unknown; parts?: Array<{ type?: string; text?: string }> }> };
     const messages = Array.isArray(body.messages) ? body.messages : [];
     const query = lastUserText(messages).trim();
@@ -59,7 +75,7 @@ export async function POST(req: Request) {
     const modelMessages = await convertToModelMessages(messages as Parameters<typeof convertToModelMessages>[0]);
 
     const result = streamText({
-      model: ollama(CHAT_MODEL),
+      model: useOpenAI ? openai(OPENAI_CHAT_MODEL) : ollama(OLLAMA_CHAT_MODEL),
       system,
       messages: modelMessages,
     });

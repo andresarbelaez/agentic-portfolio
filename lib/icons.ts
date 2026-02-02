@@ -10,7 +10,7 @@ export const ICON_PATHS = {
   aol: "/icons/aol.ico",
   start: "/icons/start.ico",
   windowsxp: "/icons/WindowsXP.ico",
-  file: "/icons/file.ico",
+  file: "/icons/File.ico",
   /** Sign On window: Help button */
   help: "/icons/help.ico",
   /** Sign On window: Setup button */
