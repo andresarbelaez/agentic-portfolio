@@ -1,0 +1,125 @@
+/**
+ * Ingest content/resume.md and content/projects.json into a local embedding store.
+ * Chunks text, calls Ollama nomic-embed-text, writes to data/embeddings.json.
+ *
+ * Run: npm run ingest
+ * Requires: Ollama running locally with nomic-embed-text pulled (ollama pull nomic-embed-text)
+ */
+import * as fs from "fs/promises";
+import * as path from "path";
+
+const OLLAMA_URL = process.env.OLLAMA_URL ?? "http://localhost:11434";
+const EMBED_MODEL = "nomic-embed-text";
+const ROOT = process.cwd();
+const CONTENT_DIR = path.join(ROOT, "content");
+const DATA_DIR = path.join(ROOT, "data");
+const OUT_FILE = path.join(DATA_DIR, "embeddings.json");
+
+type Chunk = {
+  id: string;
+  content: string;
+  embedding: number[];
+  source: "resume" | "project";
+  projectId?: string;
+};
+
+function genId(): string {
+  return `chunk_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
+async function embed(texts: string[]): Promise<number[][]> {
+  const res = await fetch(`${OLLAMA_URL}/api/embed`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: EMBED_MODEL,
+      input: texts.length === 1 ? texts[0] : texts,
+    }),
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`Ollama embed failed: ${res.status} ${t}`);
+  }
+  const j = (await res.json()) as { embeddings: number[][] };
+  return j.embeddings;
+}
+
+function chunkResume(md: string): string[] {
+  const sections = md.split(/\n(?=## )/).filter((s) => s.trim());
+  const chunks: string[] = [];
+  for (const sec of sections) {
+    const trimmed = sec.trim();
+    if (trimmed.length < 10) continue;
+    chunks.push(trimmed);
+  }
+  return chunks.length ? chunks : [md.trim()].filter(Boolean);
+}
+
+async function main() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+
+  const chunks: Chunk[] = [];
+  const BATCH = 5;
+
+  // Resume
+  const resumePath = path.join(CONTENT_DIR, "resume.md");
+  const resumeRaw = await fs.readFile(resumePath, "utf-8");
+  const resumeChunks = chunkResume(resumeRaw);
+  for (let i = 0; i < resumeChunks.length; i += BATCH) {
+    const batch = resumeChunks.slice(i, i + BATCH);
+    const embeddings = await embed(batch);
+    for (let j = 0; j < batch.length; j++) {
+      chunks.push({
+        id: genId(),
+        content: batch[j],
+        embedding: embeddings[j],
+        source: "resume",
+      });
+    }
+  }
+
+  // Projects
+  const projectsPath = path.join(CONTENT_DIR, "projects.json");
+  const projectsRaw = await fs.readFile(projectsPath, "utf-8");
+  const { projects } = JSON.parse(projectsRaw) as {
+    projects: Array<{
+      title: string;
+      slug: string;
+      url: string;
+      skills: string[];
+      summary: string;
+      evidence?: string;
+    }>;
+  };
+  for (const p of projects) {
+    const content = [
+      `Project: ${p.title}`,
+      `URL: ${p.url}`,
+      `Summary: ${p.summary}`,
+      `Skills: ${(p.skills || []).join(", ")}`,
+      p.evidence ? `Evidence: ${p.evidence}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const [emb] = await embed([content]);
+    chunks.push({
+      id: genId(),
+      content,
+      embedding: emb,
+      source: "project",
+      projectId: p.slug,
+    });
+  }
+
+  await fs.writeFile(
+    OUT_FILE,
+    JSON.stringify({ chunks }, null, 2),
+    "utf-8"
+  );
+  console.log(`Wrote ${chunks.length} chunks to ${OUT_FILE}`);
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

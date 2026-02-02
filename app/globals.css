@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Windows XP custom cursor */
+* {
+  cursor: url('/cursors/cursor.png') 0 0, auto;
+}
+
+/* Pointer cursor for clickable elements */
+a,
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+.cursor-pointer {
+  cursor: url('/cursors/cursor-pointer.png') 0 0, url('/cursors/cursor.png') 0 0, pointer;
+}
+
+/* Text cursor for inputs and text areas - more specific to override global cursor */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="search"],
+textarea,
+[contenteditable="true"],
+.cursor-text,
+input.cursor-text {
+  cursor: url('/cursors/cursor-text.png') 0 0, url('/cursors/cursor.png') 0 0, text !important;
+}
+
+/* Move cursor for draggable elements */
+[style*="cursor: move"],
+.cursor-move {
+  cursor: url('/cursors/cursor-move.png') 0 0, url('/cursors/cursor.png') 0 0, move;
+}
+
+/* Loading cursor for when LLM is generating - must override global cursor */
+.aim-window.cursor-loading,
+.aim-window.cursor-loading *,
+.aim-window.cursor-loading button,
+.aim-window.cursor-loading input,
+.aim-window.cursor-loading a,
+.cursor-loading,
+.cursor-loading * {
+  cursor: url('/cursors/cursor-loading.png') 0 0, url('/cursors/cursor.png') 0 0, wait !important;
+}
+
+/* Notepad video: hide native controls until hover (Chrome, Safari, Edge) */
+.notepad-video-wrapper video::-webkit-media-controls-panel,
+.notepad-video-wrapper video::-webkit-media-controls-enclosure {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.notepad-video-wrapper:hover video::-webkit-media-controls-panel,
+.notepad-video-wrapper:hover video::-webkit-media-controls-enclosure {
+  opacity: 1;
+}

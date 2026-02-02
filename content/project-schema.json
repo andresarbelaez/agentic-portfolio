@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Project",
+  "type": "object",
+  "required": ["title", "slug", "url", "skills", "summary"],
+  "properties": {
+    "title": { "type": "string" },
+    "slug": { "type": "string", "description": "URL-safe id for routing" },
+    "url": { "type": "string", "description": "External link (case study, live app, repo) or 'NA' if no link" },
+    "skills": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "e.g. product design, design engineering, prototyping"
+    },
+    "summary": { "type": "string" },
+    "context": {
+      "type": "string",
+      "description": "Background context for the project"
+    },
+    "the problem": {
+      "type": "string",
+      "description": "The problem this project addresses"
+    },
+    "the solution": {
+      "type": "string",
+      "description": "The solution this project provides"
+    },
+    "My Role": {
+      "type": "string",
+      "description": "Your role and responsibilities on this project"
+    },
+    "Impact": {
+      "type": "string",
+      "description": "The impact and outcomes of this project"
+    },
+    "images": {
+      "type": "array",
+      "items": { "type": "string", "format": "uri" },
+      "description": "Array of image URLs to display inline in the project"
+    },
+    "videos": {
+      "type": "array",
+      "items": { "type": "string", "format": "uri" },
+      "description": "Array of video URLs to display inline in the project"
+    },
+    "Tools Used": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Array of tools used in this project (e.g. 'Figma', 'React', 'Xcode')"
+    },
+    "Tech Stack": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Array of technologies/frameworks used in this project (e.g. 'React', 'TypeScript', 'SwiftUI')"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the project"
+    },
+    "role": {
+      "type": "string",
+      "description": "Your role/title when working on this project (e.g. 'Product Designer', 'Software Engineering Intern'). Used for agent context only, not displayed in UI."
+    },
+    "company": {
+      "type": "string",
+      "description": "Company/organization where this project was completed (e.g. 'Meta', 'IDEO', 'Personal'). Used for agent context only, not displayed in UI."
+    },
+    "evidence": {
+      "type": "string",
+      "description": "Used for agent context only, not displayed in UI"
+    },
+    "featured": { "type": "boolean", "default": false }
+  }
+}
