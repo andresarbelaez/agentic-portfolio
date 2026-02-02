@@ -19,12 +19,14 @@ type AIMChatWindowProps = {
   chatKey?: number;
   /** Call when user clicks a project link in chat; opens that project in Notepad. */
   onOpenProject?: (slug: string) => void;
+  /** Project list (title, slug) so chat can resolve root-URL links to project slugs. */
+  projects?: Array<{ title: string; slug: string }>;
 };
 
 const WINDOW_WIDTH = 420;
 const WINDOW_HEIGHT = 420;
 
-export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, onClose, hidden = false, style, zIndex = 50, onBringToFront, chatKey, onOpenProject }: AIMChatWindowProps) {
+export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, onClose, hidden = false, style, zIndex = 50, onBringToFront, chatKey, onOpenProject, projects }: AIMChatWindowProps) {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -173,6 +175,7 @@ export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, on
           aimAssistantLabel="L-997"
           onBusyChange={setIsLoading}
           onOpenProject={onOpenProject}
+          projects={projects}
         />
       </div>
 

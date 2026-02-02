@@ -276,6 +276,7 @@ export function DesktopShell({ projects }: { projects: Project[] }) {
               setFrontWindow("notepad");
             }
           }}
+          projects={projects}
         />
       )}
 

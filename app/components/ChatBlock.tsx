@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import ReactMarkdown from "react-markdown";
@@ -31,6 +31,8 @@ type ChatBlockProps = {
   onBusyChange?: (busy: boolean) => void;
   /** When user clicks a project link in chat (format [title](project:slug)), open that project in Notepad */
   onOpenProject?: (slug: string) => void;
+  /** Project list so we can resolve root-URL links by title and support project:slug links */
+  projects?: Array<{ title: string; slug: string }>;
 };
 
 export function ChatBlock({
@@ -40,13 +42,33 @@ export function ChatBlock({
   aimAssistantLabel = "L-997",
   onBusyChange,
   onOpenProject,
+  projects = [],
 }: ChatBlockProps = {}) {
-  const isProjectLink = (href: string | undefined) => typeof href === "string" && href.startsWith(PROJECT_LINK_PREFIX);
-  const projectSlug = (href: string) => href.slice(PROJECT_LINK_PREFIX.length);
+  const isProjectSlugLink = (href: string | undefined) => typeof href === "string" && href.startsWith(PROJECT_LINK_PREFIX);
+  const getSlugFromHref = (href: string) => href.slice(PROJECT_LINK_PREFIX.length);
+
+  const isSiteRootUrl = (href: string | undefined) => {
+    if (typeof href !== "string") return false;
+    try {
+      const u = new URL(href);
+      const h = u.hostname.replace(/^www\./, "");
+      return (h === "andresma.com" && (!u.pathname || u.pathname === "/"));
+    } catch {
+      return false;
+    }
+  };
+
+  const getLinkText = (node: React.ReactNode): string => {
+    if (node == null) return "";
+    if (typeof node === "string") return node;
+    if (Array.isArray(node)) return node.map(getLinkText).join("");
+    if (React.isValidElement(node) && node.props?.children != null) return getLinkText(node.props.children);
+    return "";
+  };
 
   const linkComponent = {
     a: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
-      if (isProjectLink(href) && onOpenProject) {
+      if (onOpenProject && isProjectSlugLink(href)) {
         return (
           <a
             href="#"
@@ -54,13 +76,33 @@ export function ChatBlock({
             className="text-[#0054e3] underline cursor-pointer hover:text-[#003cba]"
             onClick={(e) => {
               e.preventDefault();
-              onOpenProject(projectSlug(href!));
+              onOpenProject(getSlugFromHref(href!));
             }}
             {...props}
           >
             {children}
           </a>
         );
+      }
+      if (onOpenProject && projects.length > 0 && isSiteRootUrl(href)) {
+        const text = getLinkText(children);
+        const project = projects.find((p) => p.title === text || p.title.trim() === text);
+        if (project) {
+          return (
+            <a
+              href="#"
+              role="button"
+              className="text-[#0054e3] underline cursor-pointer hover:text-[#003cba]"
+              onClick={(e) => {
+                e.preventDefault();
+                onOpenProject(project.slug);
+              }}
+              {...props}
+            >
+              {children}
+            </a>
+          );
+        }
       }
       return (
         <a href={href} target="_blank" rel="noopener noreferrer" className="text-[#0054e3] underline hover:text-[#003cba]" {...props}>
