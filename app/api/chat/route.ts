@@ -28,17 +28,6 @@ async function loadSystemPrompt(): Promise<string> {
   }
 }
 
-async function loadProjectSlugs(): Promise<Array<{ title: string; slug: string }>> {
-  const p = path.join(process.cwd(), "content", "projects.json");
-  try {
-    const raw = await fs.readFile(p, "utf-8");
-    const { projects } = JSON.parse(raw) as { projects: Array<{ title: string; slug: string }> };
-    return projects?.map((pr) => ({ title: pr.title, slug: pr.slug })) ?? [];
-  } catch {
-    return [];
-  }
-}
-
 function lastUserText(messages: Array<{ role?: string; content?: unknown; parts?: Array<{ type?: string; text?: string }> }>): string {
   const lastUser = [...messages].reverse().find((m) => m.role === "user");
   if (!lastUser) return "";
@@ -72,11 +61,6 @@ export async function POST(req: Request) {
     const query = lastUserText(messages).trim();
 
     const baseSystem = await loadSystemPrompt();
-    const projectSlugs = await loadProjectSlugs();
-    const projectLinkRule =
-      projectSlugs.length > 0
-        ? `\n\n## Project links (MANDATORY)\nWhen you mention a project by name, you MUST link it using this exact format: [Project Title](project:slug). Use the slug from this list—never use https://andresma.com or any URL for project links.\nProject slugs:\n${projectSlugs.map((pr) => `- "${pr.title}" → slug: ${pr.slug}`).join("\n")}\nExample: [M-95 Metronome App](project:m-95-metronome-app).\n`
-        : "";
 
     let context = "";
     if (query) {
@@ -85,7 +69,7 @@ export async function POST(req: Request) {
     }
     const groundingRule =
       "Factual claims (roles, dates, projects, companies, skills, tools, technologies, technical requirements) must come only from the Context below. Do not invent or infer facts. Never use placeholders like [date] or [company]—use the exact dates and names from the Context (e.g. 2019–2021, Meta). **CRITICAL: Do not confuse skills with roles.** If the Context mentions 'design engineering' as a skill, that does NOT mean Andrés held a 'Design Engineer' role. Only mention roles that are explicitly stated in the Context (e.g., 'Product Designer', 'Software Engineering Intern'). Never infer roles from skills, project descriptions, or job responsibilities. **Never assume or invent tools, technologies, or technical requirements** (e.g., Figma, Webflow, React, specific frameworks, design tools, or development tools) unless they are explicitly mentioned in the Context. If the Context does not mention what tools or technologies were used, say you don't have that information rather than assuming common tools. Keep responses concise and avoid redundancy. If the Context does not contain the answer, say you don't have that information.";
-    const system = `${baseSystem}${projectLinkRule}${context ? `\n\n## Context (use only this to answer)\n\n${groundingRule}\n\n${context}` : ""}`;
+    const system = `${baseSystem}${context ? `\n\n## Context (use only this to answer)\n\n${groundingRule}\n\n${context}` : ""}`;
 
     const modelMessages = await convertToModelMessages(messages as Parameters<typeof convertToModelMessages>[0]);
 

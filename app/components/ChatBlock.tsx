@@ -23,22 +23,6 @@ const AIM_INTRO_MESSAGES = [
 
 const PROJECT_LINK_PREFIX = "project:";
 
-/**
- * Inject clickable project links into message text: any exact match of a project title
- * becomes [Title](project:slug) so ReactMarkdown + our link handler open the project.
- * Sort by title length descending so we match "Design System for Meta Ads' Lift" before "Design System".
- */
-function injectProjectLinks(text: string, projects: Array<{ title: string; slug: string }>): string {
-  if (!projects.length) return text;
-  const byLength = [...projects].sort((a, b) => b.title.length - a.title.length);
-  let result = text;
-  for (const p of byLength) {
-    if (!p.title.trim()) continue;
-    result = result.split(p.title).join(`[${p.title}](project:${p.slug})`);
-  }
-  return result;
-}
-
 type ChatBlockProps = {
   embedded?: boolean;
   embeddedLayout?: "default" | "aim";
@@ -64,7 +48,6 @@ export function ChatBlock({
   projects = [],
 }: ChatBlockProps = {}) {
   const isProjectSlugLink = (href: string | undefined) => typeof href === "string" && href.startsWith(PROJECT_LINK_PREFIX);
-  const getSlugFromHref = (href: string) => href.slice(PROJECT_LINK_PREFIX.length);
 
   const isSiteRootUrl = (href: string | undefined) => {
     if (typeof href !== "string") return false;
@@ -77,51 +60,11 @@ export function ChatBlock({
     }
   };
 
-  const getLinkText = (node: React.ReactNode): string => {
-    if (node == null) return "";
-    if (typeof node === "string") return node;
-    if (Array.isArray(node)) return node.map(getLinkText).join("");
-    if (React.isValidElement(node) && node.props?.children != null) return getLinkText(node.props.children);
-    return "";
-  };
-
   const linkComponent = {
     a: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
-      if (onOpenProject && isProjectSlugLink(href)) {
-        return (
-          <a
-            href="#"
-            role="button"
-            className="text-[#0054e3] underline cursor-pointer hover:text-[#003cba]"
-            onClick={(e) => {
-              e.preventDefault();
-              onOpenProject(getSlugFromHref(href!));
-            }}
-            {...props}
-          >
-            {children}
-          </a>
-        );
-      }
-      if (onOpenProject && projects.length > 0 && isSiteRootUrl(href)) {
-        const text = getLinkText(children);
-        const project = projects.find((p) => p.title === text || p.title.trim() === text);
-        if (project) {
-          return (
-            <a
-              href="#"
-              role="button"
-              className="text-[#0054e3] underline cursor-pointer hover:text-[#003cba]"
-              onClick={(e) => {
-                e.preventDefault();
-                onOpenProject(project.slug);
-              }}
-              {...props}
-            >
-              {children}
-            </a>
-          );
-        }
+      // Render project: and andresma.com root links as plain text (project links are disabled)
+      if (isProjectSlugLink(href) || (projects.length > 0 && isSiteRootUrl(href))) {
+        return <span {...props}>{children}</span>;
       }
       return (
         <a href={href} target="_blank" rel="noopener noreferrer" className="text-[#0054e3] underline hover:text-[#003cba]" {...props}>
@@ -245,7 +188,7 @@ export function ChatBlock({
                         li: ({ children }) => <li className="leading-relaxed">{children}</li>,
                       }}
                     >
-                      {injectProjectLinks(messageText(m).trim(), projects)}
+                      {messageText(m).trim()}
                     </ReactMarkdown>
                   </span>
                 )}
@@ -280,7 +223,7 @@ export function ChatBlock({
                       li: ({ children }) => <li className="leading-relaxed">{children}</li>,
                     }}
                   >
-                    {injectProjectLinks(messageText(m), projects)}
+                    {messageText(m)}
                   </ReactMarkdown>
                 </div>
               )}
