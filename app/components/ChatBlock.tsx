@@ -14,9 +14,12 @@ function messageText(m: { content?: unknown; parts?: Array<{ type?: string; text
   return out || String(c ?? "");
 }
 
-/** Default message from the agent at the start of every AIM chat */
-const AIM_DEFAULT_MESSAGE =
-  "Hello! I'm L-997, your guide to Andres' portfolio. Andres Arbelaez is a design technologist who has shipped design and code at companies like Meta and IDEO. What area of his portfolio would you like to explore?";
+/** Intro messages from the agent at the start of every AIM chat (shown in sequence, then real messages) */
+const AIM_INTRO_MESSAGES = [
+  "Hello! I'm L-997, your guide to Andres' portfolio.",
+  "Andres Arbelaez is a design technologist who has shipped design and code at Meta and IDEO.",
+  "What area of his portfolio would you like to explore?",
+] as const;
 
 const PROJECT_LINK_PREFIX = "project:";
 
@@ -118,44 +121,47 @@ export function ChatBlock({
   });
   const busy = status === "streaming" || status === "submitted";
   const isAimLayout = embedded && embeddedLayout === "aim";
-  // Show prefix after 0.5s, then type out the message
+  // Intro: 3 segments, each typed out in sequence. introSegmentIndex 0..3 (3 = all done).
   const [showPrefix, setShowPrefix] = useState(false);
-  const [typedText, setTypedText] = useState("");
+  const [introSegmentIndex, setIntroSegmentIndex] = useState(0);
+  const [typedSegmentText, setTypedSegmentText] = useState("");
 
-  // Reset typing state when chat is reset (component remounts)
+  // Reset intro state when chat is reset (component remounts); when user has sent messages, show all intro segments in full
   useEffect(() => {
     if (isAimLayout && messages.length === 0) {
       setShowPrefix(false);
-      setTypedText("");
-      // Show prefix after 0.5s
-      const prefixTimer = setTimeout(() => {
-        setShowPrefix(true);
-      }, 500);
+      setIntroSegmentIndex(0);
+      setTypedSegmentText("");
+      const prefixTimer = setTimeout(() => setShowPrefix(true), 500);
       return () => clearTimeout(prefixTimer);
-    } else if (messages.length > 0) {
-      // Once user sends a message, show default message immediately if not already shown
+    }
+    if (isAimLayout && messages.length > 0) {
       setShowPrefix(true);
-      setTypedText(AIM_DEFAULT_MESSAGE);
+      setIntroSegmentIndex(AIM_INTRO_MESSAGES.length); // show all intro messages in full
     }
   }, [isAimLayout, messages.length]);
 
-  // Type out the message character by character after prefix appears
+  // Type out the current intro segment; when complete, advance to next after a short pause
   useEffect(() => {
-    if (!isAimLayout || !showPrefix || messages.length > 0 || typedText === AIM_DEFAULT_MESSAGE) {
+    if (!isAimLayout || !showPrefix || messages.length > 0 || introSegmentIndex >= AIM_INTRO_MESSAGES.length) {
       return;
     }
-
+    const fullSegment = AIM_INTRO_MESSAGES[introSegmentIndex];
+    if (typedSegmentText.length >= fullSegment.length) {
+      const nextTimer = setTimeout(() => {
+        setIntroSegmentIndex((i) => i + 1);
+        setTypedSegmentText("");
+      }, 400);
+      return () => clearTimeout(nextTimer);
+    }
     const typingInterval = setInterval(() => {
-      setTypedText((current) => {
-        if (current.length < AIM_DEFAULT_MESSAGE.length) {
-          return AIM_DEFAULT_MESSAGE.slice(0, current.length + 1);
-        }
-        return current;
-      });
-    }, 30); // ~33 characters per second for natural typing speed
-
+      setTypedSegmentText((current) => fullSegment.slice(0, current.length + 1));
+    }, 30);
     return () => clearInterval(typingInterval);
-  }, [isAimLayout, showPrefix, messages.length, typedText]);
+  }, [isAimLayout, showPrefix, messages.length, introSegmentIndex, typedSegmentText]);
+
+  const introComplete = introSegmentIndex >= AIM_INTRO_MESSAGES.length;
+  const showFullIntro = messages.length > 0 && isAimLayout;
 
   useEffect(() => {
     onBusyChange?.(busy);
@@ -165,7 +171,7 @@ export function ChatBlock({
     const el = scrollContainerRef.current;
     if (!el) return;
     el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [messages, status, typedText]);
+  }, [messages, status, introSegmentIndex, typedSegmentText]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -183,12 +189,20 @@ export function ChatBlock({
       {messages.length === 0 && !isAimLayout && (
         <p className="py-2 text-sm text-neutral-400">Send a message to start.</p>
       )}
-      {isAimLayout && showPrefix && (
-        <div className="flex w-full justify-start text-left" style={{ fontFamily: FONT_AIM }}>
-          <div className="w-full text-sm">
-            <span className="font-semibold text-blue-600">{aimAssistantLabel}: </span>
-            <span className="whitespace-pre-wrap break-words text-black">{typedText}</span>
-          </div>
+      {isAimLayout && showPrefix && (showFullIntro || !introComplete || messages.length === 0) && (
+        <div className="flex w-full flex-col gap-1 text-left" style={{ fontFamily: FONT_AIM }}>
+          {AIM_INTRO_MESSAGES.map((segment, i) => {
+            const isCurrentSegment = i === introSegmentIndex && !showFullIntro;
+            const isPastSegment = showFullIntro || i < introSegmentIndex;
+            const text = isPastSegment ? segment : isCurrentSegment ? typedSegmentText : "";
+            if (!text && !isCurrentSegment) return null;
+            return (
+              <div key={i} className="w-full text-sm">
+                <span className="font-semibold text-blue-600">{aimAssistantLabel}: </span>
+                <span className="whitespace-pre-wrap break-words text-black">{text}</span>
+              </div>
+            );
+          })}
         </div>
       )}
       {messages.map((m) => {
