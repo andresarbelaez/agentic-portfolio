@@ -2,14 +2,12 @@
 
 /**
  * Windows XP–style title bar buttons (minimize, maximize/restore, close).
- * Matches reference: square, light silver/gray for min/max, red (more saturated on hover) for close.
+ * Light grey fill with opacity so blue title bar shows through; small corner radius and white stroke.
  */
 const BTN_SIZE = 21;
-const BTN_SILVER = "#c8c8c8";
-const BTN_SILVER_HOVER = "#d8d8d8";
+const BTN_FILL = "rgba(255, 255, 255, 0.13)";
+const BTN_CLOSE_FILL = "#c0392b";
 const BTN_ICON = "#2b2b2b";
-const BTN_CLOSE = "#c0392b";
-const BTN_CLOSE_HOVER = "#e74c3c";
 
 const btnBase: React.CSSProperties = {
   width: BTN_SIZE,
@@ -17,11 +15,12 @@ const btnBase: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  border: "none",
+  border: "1px solid #fff",
+  borderRadius: 2,
   cursor: "pointer",
   padding: 0,
   flexShrink: 0,
-  background: BTN_SILVER,
+  background: BTN_FILL,
   color: BTN_ICON,
 };
 
@@ -70,7 +69,7 @@ export function XPTitleBarButtons({ onMinimize, onMaximize, onClose, isMaximized
         onClick={onClose}
         style={{
           ...btnBase,
-          background: BTN_CLOSE,
+          background: BTN_CLOSE_FILL,
           color: "#fff",
         }}
         className="xp-title-btn-close"

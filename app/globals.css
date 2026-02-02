@@ -64,11 +64,11 @@ input.cursor-text {
   opacity: 1;
 }
 
-/* XP title bar buttons: silver hover for min/max, more saturated red for close */
+/* XP title bar buttons: slightly brighter on hover for min/max, more saturated red for close */
 .xp-title-btn-min:hover,
 .xp-title-btn-max:hover {
-  background: #d8d8d8 !important;
+  background: rgba(255, 255, 255, 0.22) !important;
 }
 .xp-title-btn-close:hover {
-  background: #e74c3c !important;
+  background: rgba(228, 76, 60, 0.9) !important;
 }
