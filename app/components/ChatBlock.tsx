@@ -18,7 +18,7 @@ function messageText(m: { content?: unknown; parts?: Array<{ type?: string; text
 const AIM_INTRO_MESSAGES = [
   "Hello! I'm L-997, your guide to andresma.com.",
   "Andres Arbelaez is a design technologist who has shipped design and code at Meta and IDEO.",
-  "What would you like to know about Andres?",
+  "What would you like to learn about Andres?",
 ] as const;
 
 const PROJECT_LINK_PREFIX = "project:";
