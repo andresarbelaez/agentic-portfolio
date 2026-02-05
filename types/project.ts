@@ -19,4 +19,5 @@ export type Project = {
   company?: string; // Used for agent context only, not displayed in UI
   evidence?: string; // Used for agent context only, not displayed in UI
   featured?: boolean;
+  hidden?: boolean; // If true, hidden from desktop UI but still available to agent
 };

@@ -69,6 +69,7 @@
       "type": "string",
       "description": "Used for agent context only, not displayed in UI"
     },
-    "featured": { "type": "boolean", "default": false }
+    "featured": { "type": "boolean", "default": false },
+    "hidden": { "type": "boolean", "default": false, "description": "If true, project is hidden from desktop UI but still available to agent" }
   }
 }

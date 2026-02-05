@@ -15,3 +15,8 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   const projects = await getProjects();
   return projects.find((p) => p.slug === slug) ?? null;
 }
+
+export async function getVisibleProjects(): Promise<Project[]> {
+  const projects = await getProjects();
+  return projects.filter((p) => !p.hidden);
+}

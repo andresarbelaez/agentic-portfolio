@@ -44,7 +44,6 @@ export function ChatBlock({
   aimUserLabel = "You",
   aimAssistantLabel = "L-997",
   onBusyChange,
-  onOpenProject,
   projects = [],
 }: ChatBlockProps = {}) {
   const isProjectSlugLink = (href: string | undefined) => typeof href === "string" && href.startsWith(PROJECT_LINK_PREFIX);
