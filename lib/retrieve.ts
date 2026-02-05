@@ -68,7 +68,9 @@ async function embedQuery(query: string): Promise<number[]> {
 
 export async function findRelevantChunks(
   query: string,
-  topK: number = DEFAULT_TOP_K
+  topK: number = DEFAULT_TOP_K,
+  /** When set, chunks with these projectIds are always included (for AI queries so AI projects are in context). */
+  forceIncludeProjectIds?: string[]
 ): Promise<StoredChunk[]> {
   const dataPath = path.join(process.cwd(), "data", "embeddings.json");
   let raw: string;
@@ -86,5 +88,17 @@ export async function findRelevantChunks(
     score: cosineSimilarity(c.embedding, queryEmbedding),
   }));
   withScore.sort((a, b) => b.score - a.score);
-  return withScore.slice(0, topK).map((x) => x.chunk);
+  const top = withScore.slice(0, topK).map((x) => x.chunk);
+  const topIds = new Set(top.map((c) => c.id));
+
+  if (forceIncludeProjectIds?.length) {
+    const forceSet = new Set(forceIncludeProjectIds);
+    for (const c of chunks) {
+      if (c.projectId && forceSet.has(c.projectId) && !topIds.has(c.id)) {
+        top.push(c);
+        topIds.add(c.id);
+      }
+    }
+  }
+  return top;
 }

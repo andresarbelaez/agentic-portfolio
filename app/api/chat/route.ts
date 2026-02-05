@@ -1,4 +1,5 @@
 import { findRelevantChunks } from "@/lib/retrieve";
+import { getProjects } from "@/lib/projects";
 import { streamText, convertToModelMessages, generateId } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOllama } from "ollama-ai-provider-v2";
@@ -64,7 +65,13 @@ export async function POST(req: Request) {
 
     let context = "";
     if (query) {
-      const chunks = await findRelevantChunks(query, 10);
+      const projects = await getProjects();
+      const aiProjectSlugs = projects
+        .filter((p) => p.topics?.some((t) => t.toUpperCase() === "AI"))
+        .map((p) => p.slug);
+      const isAiQuery = /\bAI\b|artificial intelligence|AI project|AI experience|AI work/i.test(query);
+      const forceIncludeSlugs = isAiQuery && aiProjectSlugs.length > 0 ? aiProjectSlugs : undefined;
+      const chunks = await findRelevantChunks(query, 10, forceIncludeSlugs);
       context = chunks.length ? chunks.map((c) => c.content).join("\n\n---\n\n") : "";
     }
     const groundingRule =
