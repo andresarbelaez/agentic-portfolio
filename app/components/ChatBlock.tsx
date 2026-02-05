@@ -142,7 +142,7 @@ export function ChatBlock({
   const messagesArea = (
     <div
       ref={scrollContainerRef}
-      className={`flex flex-col gap-2 ${embedded ? "flex-1 overflow-y-auto min-h-0" : "max-h-80 overflow-y-auto"} ${isAimLayout ? "bg-white p-2 border-b border-[#ccc]" : ""}`}
+      className={`flex flex-col gap-1 ${embedded ? "flex-1 overflow-y-auto min-h-0" : "max-h-80 overflow-y-auto"} ${isAimLayout ? "bg-white p-2 border-b border-[#ccc]" : ""}`}
     >
       {messages.length === 0 && !isAimLayout && (
         <p className="py-2 text-sm text-neutral-400">Send a message to start.</p>
