@@ -229,7 +229,7 @@ export function ChatBlock({
           </div>
         );
       })}
-      {busy && (
+      {busy && (messages.length === 0 || messages[messages.length - 1]?.role === "user") && (
         isAimLayout ? (
           <div className="flex w-full justify-start text-left text-sm text-neutral-500" style={{ fontFamily: FONT_AIM }}>
             <div className="w-full">

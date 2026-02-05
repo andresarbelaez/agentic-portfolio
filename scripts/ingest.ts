@@ -117,9 +117,12 @@ async function main() {
     evidence?: string;
   };
   const { projects } = JSON.parse(projectsRaw) as { projects: ProjectInput[] };
+  const AI_PROJECT_SLUGS = new Set(["confidant-offline-ai-assistant", "agentic-portfolio-website"]);
   for (const p of projects) {
     const solution = p["the solution"];
+    const isAiProject = AI_PROJECT_SLUGS.has(p.slug);
     const content = [
+      isAiProject ? "AI project. Artificial intelligence, machine learning, LLM, RAG. Andrés's AI experience." : "",
       `Project: ${p.title}`,
       `URL: ${p.url}`,
       `Summary: ${p.summary}`,
