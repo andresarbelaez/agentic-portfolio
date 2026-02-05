@@ -70,6 +70,11 @@
       "description": "Used for agent context only, not displayed in UI"
     },
     "featured": { "type": "boolean", "default": false },
-    "hidden": { "type": "boolean", "default": false, "description": "If true, project is hidden from desktop UI but still available to agent" }
+    "hidden": { "type": "boolean", "default": false, "description": "If true, project is hidden from desktop UI but still available to agent" },
+    "topics": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional topics for retrieval (e.g. ['AI']). Used by ingest to boost relevance for queries like 'AI projects'. Not displayed in UI."
+    }
   }
 }

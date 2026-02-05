@@ -1,7 +1,7 @@
 {
   "chunks": [
     {
-      "id": "chunk_1770328357649_aypdw8g",
+      "id": "chunk_1770329252751_rabdl00",
       "content": "# [Your Name] — Resume",
       "embedding": [
         -0.0057589337,
@@ -776,7 +776,7 @@
       "source": "resume"
     },
     {
-      "id": "chunk_1770328357649_zkuc64c",
+      "id": "chunk_1770329252751_kmr4vy0",
       "content": "## Experience\n\n- **Founder, After School Records** (2023–Present)  \n  Built an independent music and technology platform focused on artist ownership and fan engagement. Worked hands-on with web3 technologies, including writing smart contracts for music distribution and experimenting with blockchain-based community and revenue models. Combined product thinking, engineering, and creative strategy.\n\n- **Product Designer, Meta** (2019–2021)  \n  Worked on \"Lift Testing\", a Meta Ads A/B testing tool used by Meta's largest advertisers. Partnered closely with product managers, engineers, and researchers to simplify complex Lift Results dashboards and make Lift Tests as actionable as possible. Focused on system-level thinking, usability at scale, and cross-functional execution.\n\n- **Design CoLab Fellow, IDEO** (2019)  \n  Led research-driven design work across ambiguous problem spaces, translating human insights into product strategies, prototypes, and shippable concepts. Bridged design and engineering through prototyping, systems thinking, and storytelling. Specialized in turning complex, undefined problems into structured product solutions.\n\n- **Product Design Intern, Meta** (2018)  \n  Worked on Meta Ads' Delivery, specifically the Campaign Budget Optimization feature. Shipped growth tactics to increase adoption of CBO, making it an industry standard. Collaborated with Engineers, Product Managers, and Product Marketing Managers.\n\n- **Software Engineering Intern, Instagram** (2017)  \n  Worked in an engineering role focused on building production systems, collaborating with designers and product teams. Developed strong foundations in technical architecture, developer workflows, and cross-functional product development.\n\n- **Independent Music Producer & Artist** (2021–Present)  \n  Producing hip-hop and R&B music daily for multiple years. Active creator on Patreon, building a community-supported creative practice with recurring revenue. Uses platforms like Splice, Logic Pro, and digital distribution tools daily, developing deep user empathy for creator platforms.",
       "embedding": [
         -0.043575827,
@@ -1551,7 +1551,7 @@
       "source": "resume"
     },
     {
-      "id": "chunk_1770328357649_gj654r3",
+      "id": "chunk_1770329252751_hg7a3gb",
       "content": "## Education\n\n- **B.S. Human-Centered Product Design, University of Maryland** (2019)  \n  A self-initiated custom degree combining studies in Computer Science, Design, and Business. Coursework included Algorithms, Object-Oriented Programming, Technology Ethics, and",
       "embedding": [
         -0.022013946,
@@ -2326,7 +2326,7 @@
       "source": "resume"
     },
     {
-      "id": "chunk_1770328357649_aifox7b",
+      "id": "chunk_1770329252751_2u98gta",
       "content": "## Skills\n\n- Product design  \n- UX/UI design  \n- Design engineering\n- Design Systems  \n- Prototyping  \n- Cross-functional collaboration  \n- User research  \n- Design strategy  \n- Smart contracts  \n- Web3 product development  \n- Blockchain systems  \n- Software engineering \n- frontend development\n- React\n- Javascript\n- CSS\n- cross-platform development\n- React Native\n- iOS development\n- Objective-C\n- SwiftUI\n- Android Development\n- Kotlin\n- Creative tooling ecosystems  \n- Platform design  \n- Creator economy platforms  \n- Design Tools (Figma, Sketch, Adobe Creative Cloud)\n- AI Prototyping tools (Cursor, Claude, Vercel, Figma Make) \n- Music technology systems\n- Music DAWs (Logic Pro X, Garageband, Bandlab)",
       "embedding": [
         0.00030832563,
@@ -3101,7 +3101,7 @@
       "source": "resume"
     },
     {
-      "id": "chunk_1770328357691_cite1u8",
+      "id": "chunk_1770329252790_dm53gl8",
       "content": "Project: Design System for Meta Ads' Lift\nURL: NA\nSummary: A design system for an ever-expanding Meta Ads product.\nContext: Lift is a Meta Ads product used by Meta's largest advertisers to A/B test ad strategies.\nSkills: product design, design systems, enterprise design, cross-functional collaboration, design collaboration, design documentation, design handoffs, b2b design\nSolution: A scalable, adaptable, well-documented design system with a mix of custom components and components inherited from the larger Meta Ads design system. The Lift Results Design System, a living document with code-ready components.\nEvidence: Shows product design and design engineering skills through shipping production-ready design system components, achieving 90% compliance rate, and improving UX quality metrics.",
       "embedding": [
         -0.018213192,
@@ -3877,7 +3877,7 @@
       "projectId": "design-system-meta-ads-lift"
     },
     {
-      "id": "chunk_1770328357731_495ao4f",
+      "id": "chunk_1770329252823_q476vkp",
       "content": "Project: M-95 Metronome App\nURL: NA\nSummary: A custom metronome iOS app built with Cursor and Xcode, written in SwiftUI.\nContext: I'm a musician and metronomes are great for practice and live shows.\nSkills: product design, design engineering, rapid prototyping, iOS development, mobile development, audio I/O\nSolution: A custom metronome iOS app built with Cursor (an AI prototyping tool) and Xcode, written in SwiftUI.\nEvidence: Shows product design and design engineering skills through end-to-end development of a custom iOS application from concept to App Store-ready product.",
       "embedding": [
         -0.033339765,
@@ -4653,7 +4653,7 @@
       "projectId": "m-95-metronome-app"
     },
     {
-      "id": "chunk_1770328357767_lzvhvkw",
+      "id": "chunk_1770329252848_ma2a95r",
       "content": "Project: Design Deliverables Framework for Meta Ads' Lift\nURL: NA\nSummary: An intentionally-designed, shared & reinforced Design Deliverables framework.\nSkills: product design, design systems, design operations, design collaboration, design documentation, design handoffs\nSolution: An intentionally-designed, shared & reinforced Design Deliverables framework.\nEvidence: Shows product design skills through creating operational frameworks that improve team efficiency and reduce cross-functional friction.",
       "embedding": [
         0.009567922,
@@ -5429,7 +5429,7 @@
       "projectId": "design-deliverables-framework-meta-ads-lift"
     },
     {
-      "id": "chunk_1770328357832_7zpahlt",
+      "id": "chunk_1770329252894_u420l1i",
       "content": "Project: Prototyping Mesh: An Open Financial System for IDEO's CoLab\nURL: NA\nSummary: A proposed community-wide mesh network for peer-to-peer transactions in low-connectivity scenarios.\nContext: The IDEO CoLab is a branch of the legendary IDEO company, focused on prototyping emerging technologies in collaboration with a portfolio of companies and a network of design technologists and policy-makers.\nSkills: product design, rapid prototyping, mesh networking, emerging technologies, prototyping, community design, community economics, community networks, community systems, community infrastructure, community resilience engineering, community resilience design\nSolution: A proposed community-wide mesh network, with Raspberry Pi nodes communicating through Bluetooth protocols. This network allows for peer-to-peer transactions by creating a shared ledger that is uploaded to utility vehicles (such as US Postal Service trucks), which then download the ledger transactions to their appropriate financial institutions upon reaching an area of higher internet connectivity.\nEvidence: Shows product design skills through prototyping emerging technologies and designing solutions for complex, future-facing problems in collaboration with cross-disciplinary experts.",
       "embedding": [
         -0.027524963,
@@ -6205,7 +6205,7 @@
       "projectId": "prototyping-mesh-open-financial-system-ideo-colab"
     },
     {
-      "id": "chunk_1770328357869_0r5jtgs",
+      "id": "chunk_1770329252921_lh82089",
       "content": "Project: Growth for Meta Ads' Campaign Budget Optimization\nURL: NA\nSummary: A growth-focused, strategic addition of contextual upsells and toggles across various Meta Ads surfaces.\nSkills: product design, growth strategy, growth design, enterprise design, b2b design\nSolution: A growth-focused, strategic addition of contextual upsells and toggles across various Meta Ads surfaces.\nEvidence: Shows product design skills through growth-focused design that increased feature adoption and retention, ultimately influencing product best practices.",
       "embedding": [
         0.017634524,
@@ -6981,7 +6981,7 @@
       "projectId": "growth-meta-ads-campaign-budget-optimization"
     },
     {
-      "id": "chunk_1770328357902_8f175nv",
+      "id": "chunk_1770329252948_lb4spk9",
       "content": "Project: Mobile iOS development for Instagram Promote\nURL: NA\nSummary: Enabling faster load times for Instagram Promote.\nContext: Instagram Promote is Meta's in-app product flow for launching and managing Instagram Ads.\nSkills: software engineering, software development, software architecture, software design, frontend development, mobile development, iOS development\nSolution: A more performant React Native bridge front-end programming logic, allowing for faster load times for Instagram Promote.\nEvidence: Shows design engineering and software engineering skills through optimizing React Native bridge performance, achieving a 300% reduction in Time-To-Interaction.",
       "embedding": [
         0.020363778,
@@ -7757,7 +7757,7 @@
       "projectId": "mobile-ios-development-instagram-promote"
     },
     {
-      "id": "chunk_1770328357953_u03nss9",
+      "id": "chunk_1770329252996_e8d60t0",
       "content": "AI project. Artificial intelligence, machine learning, LLM, RAG. Andrés's AI experience.\nProject: Confidant - Offline AI Assistant\nURL: NA\nSummary: An open-source, privacy-first AI assistant that provides offline AI health consultation. All processing happens locally with no network access for queries.\nContext: Confidant is an AI assistant optimized for health and legal questions, running completely offline using local LLMs and RAG over a knowledge base.\nSkills: product design, full-stack development, RAG, AI integration, privacy engineering, local LLM, vector embeddings, desktop development, Rust, TypeScript, React, Python, health technology, legal technology\nSolution: A fully offline AI assistant that runs optimized LLM models (Mistral-7B-Instruct, Llama-3.2-3B) locally via llama.cpp, with RAG capabilities using ChromaDB and sentence-transformers. All processing happens client-side with no network access.\nEvidence: Shows product design, full-stack development, AI integration, and privacy engineering skills through building a complete offline AI assistant with local LLM inference, RAG capabilities, and desktop app architecture.",
       "embedding": [
         0.014184863,
@@ -8533,7 +8533,7 @@
       "projectId": "confidant-offline-ai-assistant"
     },
     {
-      "id": "chunk_1770328358003_e31vvq0",
+      "id": "chunk_1770329253045_0qpa83z",
       "content": "AI project. Artificial intelligence, machine learning, LLM, RAG. Andrés's AI experience.\nProject: Agentic Portfolio Website\nURL: https://andresma.com\nSummary: A Windows XP-themed portfolio website with a RAG-powered AI agent that answers questions about Andrés's work and experience, using vector embeddings and retrieval-augmented generation.\nContext: A portfolio site that demonstrates both design and engineering skills through a nostalgic Windows XP interface, combined with modern AI capabilities.\nSkills: product design, design engineering, full-stack development, RAG, AI integration, vector embeddings, Next.js, TypeScript, React, UI/UX design, creative technology\nSolution: A portfolio that combines a nostalgic, interactive Windows XP UI with a RAG-powered AI agent. The agent has access to resume content and project details through vector embeddings, allowing it to answer questions, cite specific projects, and point to evidence of skills.\nEvidence: Shows product design, design engineering, and full-stack development skills through building a complete portfolio site with AI integration, RAG implementation, vector embeddings, and a cohesive Windows XP-themed UI.",
       "embedding": [
         -0.010554897,

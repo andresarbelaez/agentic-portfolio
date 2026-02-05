@@ -20,4 +20,5 @@ export type Project = {
   evidence?: string; // Used for agent context only, not displayed in UI
   featured?: boolean;
   hidden?: boolean; // If true, hidden from desktop UI but still available to agent
+  topics?: string[]; // Optional topics for retrieval (e.g. ['AI']). Used by ingest only, not displayed in UI.
 };

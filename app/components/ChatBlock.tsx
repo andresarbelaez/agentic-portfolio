@@ -166,6 +166,8 @@ export function ChatBlock({
         const isUser = m.role === "user";
         const prefix = isUser ? aimUserLabel : aimAssistantLabel;
         const prefixColor = isUser ? "text-red-600" : "text-blue-600";
+        const text = messageText(m);
+        const showThinking = !isUser && busy && !text.trim();
 
         if (isAimLayout) {
           return (
@@ -173,7 +175,9 @@ export function ChatBlock({
               <div className="w-full text-sm">
                 <span className={`font-semibold ${prefixColor}`}>{prefix}: </span>
                 {isUser ? (
-                  <span className="whitespace-pre-wrap break-words text-black">{messageText(m)}</span>
+                  <span className="whitespace-pre-wrap break-words text-black">{text}</span>
+                ) : showThinking ? (
+                  <span className="text-neutral-500 animate-pulse">Thinking...</span>
                 ) : (
                   <span className="text-black [&>*:last-child]:mb-0 [&>*:first-child]:mt-0 [&>*:first-child]:inline">
                     <ReactMarkdown
@@ -186,7 +190,7 @@ export function ChatBlock({
                         li: ({ children }) => <li className="leading-relaxed">{children}</li>,
                       }}
                     >
-                      {messageText(m).trim()}
+                      {text.trim()}
                     </ReactMarkdown>
                   </span>
                 )}
@@ -208,7 +212,9 @@ export function ChatBlock({
               }`}
             >
               {isUser ? (
-                <span className="whitespace-pre-wrap break-words">{messageText(m)}</span>
+                <span className="whitespace-pre-wrap break-words">{text}</span>
+              ) : showThinking ? (
+                <span className="text-neutral-500 animate-pulse">Thinking...</span>
               ) : (
                 <div className="[&>*:last-child]:mb-0">
                   <ReactMarkdown
@@ -221,7 +227,7 @@ export function ChatBlock({
                       li: ({ children }) => <li className="leading-relaxed">{children}</li>,
                     }}
                   >
-                    {messageText(m)}
+                    {text}
                   </ReactMarkdown>
                 </div>
               )}
@@ -229,7 +235,7 @@ export function ChatBlock({
           </div>
         );
       })}
-      {busy && (messages.length === 0 || messages[messages.length - 1]?.role === "user") && (
+      {busy && (messages.length === 0 || messages[messages.length - 1]?.role === "user") && !messages.some((m) => m.role === "assistant") && (
         isAimLayout ? (
           <div className="flex w-full justify-start text-left text-sm text-neutral-500" style={{ fontFamily: FONT_AIM }}>
             <div className="w-full">

@@ -20,7 +20,8 @@
       "role": "Product Designer",
       "company": "Meta",
       "evidence": "Shows product design and design engineering skills through shipping production-ready design system components, achieving 90% compliance rate, and improving UX quality metrics.",
-      "featured": true
+      "featured": true,
+      "topics": ["design systems", "enterprise", "Meta", "web", "web design", "Sketch"]
     },
     {
       "title": "M-95 Metronome App",
@@ -41,7 +42,8 @@
       "role": "Independent",
       "company": "Personal",
       "evidence": "Shows product design and design engineering skills through end-to-end development of a custom iOS application from concept to App Store-ready product.",
-      "featured": false
+      "featured": false,
+      "topics": ["iOS", "mobile", "music", "SwiftUI", "Cursor", "Xcode", "Figma"]
     },
     {
       "title": "Design Deliverables Framework for Meta Ads' Lift",
@@ -61,7 +63,8 @@
       "role": "Product Designer",
       "company": "Meta",
       "evidence": "Shows product design skills through creating operational frameworks that improve team efficiency and reduce cross-functional friction.",
-      "featured": false
+      "featured": false,
+      "topics": ["design systems", "design operations", "Meta", "Sketch"]
     },
     {
       "title": "Prototyping Mesh: An Open Financial System for IDEO's CoLab",
@@ -82,7 +85,8 @@
       "role": "CoLab Design Fellow",
       "company": "IDEO",
       "evidence": "Shows product design skills through prototyping emerging technologies and designing solutions for complex, future-facing problems in collaboration with cross-disciplinary experts.",
-      "featured": false
+      "featured": false,
+      "topics": ["prototyping", "IDEO", "mesh networking", "finance", "Python", "Sketch", "Raspberry Pi", "Bluetooth", "Linux"]
     },
     {
       "title": "Growth for Meta Ads' Campaign Budget Optimization",
@@ -102,7 +106,8 @@
       "role": "Product Design Intern",
       "company": "Meta",
       "evidence": "Shows product design skills through growth-focused design that increased feature adoption and retention, ultimately influencing product best practices.",
-      "featured": false
+      "featured": false,
+      "topics": ["growth", "Meta", "advertising", "web", "web design"]
     },
     {
       "title": "Mobile iOS development for Instagram Promote",
@@ -123,7 +128,8 @@
       "role": "Software Engineering Intern",
       "company": "Instagram and Meta",
       "evidence": "Shows design engineering and software engineering skills through optimizing React Native bridge performance, achieving a 300% reduction in Time-To-Interaction.",
-      "featured": false
+      "featured": false,
+      "topics": ["software engineering", "iOS", "React Native", "performance", "Objective-C"]
     },
     {
       "title": "Confidant - Offline AI Assistant",
@@ -145,7 +151,8 @@
       "company": "Personal",
       "evidence": "Shows product design, full-stack development, AI integration, and privacy engineering skills through building a complete offline AI assistant with local LLM inference, RAG capabilities, and desktop app architecture.",
       "featured": true,
-      "hidden": false
+      "hidden": false,
+      "topics": ["AI", "desktop", "desktop app", "Tauri 2.0", "Cursor", "GitHub", "ChromaDB", "sentence-transformers", "llama.cpp", "Python", "React", "TypeScript", "Rust", "GGUF quantization", "Mistral-7B-Instruct", "Llama-3.2-3B"]
     },
     {
       "title": "Agentic Portfolio Website",
@@ -167,7 +174,8 @@
       "company": "Personal",
       "evidence": "Shows product design, design engineering, and full-stack development skills through building a complete portfolio site with AI integration, RAG implementation, vector embeddings, and a cohesive Windows XP-themed UI.",
       "featured": false,
-      "hidden": true
+      "hidden": true,
+      "topics": ["AI", "web", "web design", "Cursor", "Vercel", "GitHub", "OpenAI API", "Ollama", "Next.js 14", "React 18", "TypeScript", "Tailwind CSS", "Vercel AI SDK", "OpenAI", "react-markdown"]
     }
   ]
 }
