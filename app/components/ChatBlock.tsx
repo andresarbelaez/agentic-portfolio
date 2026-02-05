@@ -147,22 +147,21 @@ export function ChatBlock({
       {messages.length === 0 && !isAimLayout && (
         <p className="py-2 text-sm text-neutral-400">Send a message to start.</p>
       )}
-      {isAimLayout && showPrefix && (showFullIntro || !introComplete || messages.length === 0) && (
-        <div className="flex w-full flex-col gap-1 text-left" style={{ fontFamily: FONT_AIM }}>
-          {AIM_INTRO_MESSAGES.map((segment, i) => {
-            const isCurrentSegment = i === introSegmentIndex && !showFullIntro;
-            const isPastSegment = showFullIntro || i < introSegmentIndex;
-            const text = isPastSegment ? segment : isCurrentSegment ? typedSegmentText : "";
-            if (!text && !isCurrentSegment) return null;
-            return (
-              <div key={i} className="w-full text-sm">
+      {isAimLayout && showPrefix && (showFullIntro || !introComplete || messages.length === 0) &&
+        AIM_INTRO_MESSAGES.map((segment, i) => {
+          const isCurrentSegment = i === introSegmentIndex && !showFullIntro;
+          const isPastSegment = showFullIntro || i < introSegmentIndex;
+          const text = isPastSegment ? segment : isCurrentSegment ? typedSegmentText : "";
+          if (!text && !isCurrentSegment) return null;
+          return (
+            <div key={`intro-${i}`} className="flex w-full justify-start text-left text-sm" style={{ fontFamily: FONT_AIM }}>
+              <div className="w-full">
                 <span className="font-semibold text-blue-600">{aimAssistantLabel}: </span>
                 <span className="whitespace-pre-wrap break-words text-black">{text}</span>
               </div>
-            );
-          })}
-        </div>
-      )}
+            </div>
+          );
+        })}
       {messages.map((m) => {
         const isUser = m.role === "user";
         const prefix = isUser ? aimUserLabel : aimAssistantLabel;
@@ -230,6 +229,22 @@ export function ChatBlock({
           </div>
         );
       })}
+      {busy && (
+        isAimLayout ? (
+          <div className="flex w-full justify-start text-left text-sm text-neutral-500" style={{ fontFamily: FONT_AIM }}>
+            <div className="w-full">
+              <span className="font-semibold text-blue-600">{aimAssistantLabel}: </span>
+              <span className="animate-pulse">Thinking...</span>
+            </div>
+          </div>
+        ) : (
+          <div className="flex w-full justify-start">
+            <div className="max-w-[85%] rounded-2xl rounded-bl-md px-4 py-3 text-sm text-neutral-500 bg-neutral-100 border border-neutral-200 shadow-sm">
+              <span className="animate-pulse">Thinking...</span>
+            </div>
+          </div>
+        )
+      )}
     </div>
   );
 
