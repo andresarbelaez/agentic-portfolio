@@ -106,22 +106,26 @@ async function main() {
   // Projects
   const projectsPath = path.join(CONTENT_DIR, "projects.json");
   const projectsRaw = await fs.readFile(projectsPath, "utf-8");
-  const { projects } = JSON.parse(projectsRaw) as {
-    projects: Array<{
-      title: string;
-      slug: string;
-      url: string;
-      skills: string[];
-      summary: string;
-      evidence?: string;
-    }>;
+  type ProjectInput = {
+    title: string;
+    slug: string;
+    url: string;
+    skills: string[];
+    summary: string;
+    context?: string;
+    "the solution"?: string;
+    evidence?: string;
   };
+  const { projects } = JSON.parse(projectsRaw) as { projects: ProjectInput[] };
   for (const p of projects) {
+    const solution = p["the solution"];
     const content = [
       `Project: ${p.title}`,
       `URL: ${p.url}`,
       `Summary: ${p.summary}`,
+      p.context ? `Context: ${p.context}` : "",
       `Skills: ${(p.skills || []).join(", ")}`,
+      solution ? `Solution: ${solution}` : "",
       p.evidence ? `Evidence: ${p.evidence}` : "",
     ]
       .filter(Boolean)

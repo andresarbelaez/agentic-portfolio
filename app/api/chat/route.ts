@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 
     let context = "";
     if (query) {
-      const chunks = await findRelevantChunks(query, 6);
+      const chunks = await findRelevantChunks(query, 10);
       context = chunks.length ? chunks.map((c) => c.content).join("\n\n---\n\n") : "";
     }
     const groundingRule =
