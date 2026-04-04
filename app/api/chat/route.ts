@@ -113,7 +113,7 @@ export async function POST(req: Request) {
       }
     }
     const groundingRule =
-      "Factual claims (roles, dates, projects, companies, skills, tools, technologies, technical requirements) must come only from the Context below. Do not invent or infer facts. Never use placeholders like [date] or [company]—use the exact dates and names from the Context (e.g. 2019–2021, Meta). **CRITICAL: Do not confuse skills with roles.** If the Context mentions 'design engineering' as a skill, that does NOT mean Andrés held a 'Design Engineer' role. Only mention roles that are explicitly stated in the Context (e.g., 'Product Designer', 'Software Engineering Intern'). Never infer roles from skills, project descriptions, or job responsibilities. **Never assume or invent tools, technologies, or technical requirements** (e.g., Figma, Webflow, React, specific frameworks, design tools, or development tools) unless they are explicitly mentioned in the Context. If the Context does not mention what tools or technologies were used, say you don't have that information rather than assuming common tools. Keep responses concise and avoid redundancy. If the Context does not contain the answer, say you don't have that information.";
+      "Factual claims (roles, dates, projects, companies, skills, tools, technologies, technical requirements) must come only from the Context below. Do not invent or infer facts. Never use placeholders like [date] or [company]—use the exact dates and names from the Context (e.g. 2019–2021, Meta). **CRITICAL: Do not confuse skills with roles.** If the Context mentions 'design engineering' as a skill, that does NOT mean Andrés held a 'Design Engineer' role. Only mention roles that are explicitly stated in the Context (e.g., 'Product Designer', 'Software Engineering Intern'). Never infer roles from skills, project descriptions, or job responsibilities. **Never assume or invent tools, technologies, or technical requirements** (e.g., Figma, Webflow, React, specific frameworks, design tools, or development tools) unless they are explicitly mentioned in the Context. If the Context does not mention what tools or technologies were used, say you don't have that information rather than assuming common tools. **Verbatim tool and product names:** Any specific named product, platform, library, vendor tool, or SaaS you say Andrés used (including in AI/ML, design, engineering, or analytics) must appear as text in the Context below (matching is case-insensitive). Do not add plausible-sounding product names from general knowledge. If a name is not in the Context, omit it or describe the capability generically only when the Context already describes that capability. Keep responses concise and avoid redundancy. If the Context does not contain the answer, say you don't have that information.";
     const system = `${baseSystem}${context ? `\n\n## Context (use only this to answer)\n\n${groundingRule}\n\n${context}` : ""}`;
 
     const normalizedMessages = normalizeUiMessagesForSdk(messages);
@@ -125,6 +125,7 @@ export async function POST(req: Request) {
       model: useOpenAI ? openai(OPENAI_CHAT_MODEL) : ollama(OLLAMA_CHAT_MODEL),
       system,
       messages: modelMessages,
+      temperature: 0,
     });
 
     return result.toUIMessageStreamResponse({

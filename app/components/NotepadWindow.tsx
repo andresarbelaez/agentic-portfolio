@@ -8,6 +8,10 @@ import { XPTitleBarButtons } from "./XPTitleBarButtons";
 import type { Project } from "@/types/project";
 
 const TASKBAR_HEIGHT = 36;
+/** Match AIM chat: narrow viewports get fitted window bounds. */
+const MOBILE_BREAKPOINT_PX = 640;
+const MOBILE_PAD_X = 8;
+const MOBILE_PAD_Y = 8;
 
 const XP_TITLE_GRADIENT = "linear-gradient(180deg, #0054e3 0%, #0047d0 50%, #003cba 100%)";
 
@@ -123,8 +127,10 @@ export function NotepadWindow({
   zIndex = 45,
   onBringToFront,
 }: NotepadWindowProps) {
-  const [pos, setPos] = useState({ x: 120, y: 100 });
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ width: NOTEPAD_WIDTH, height: NOTEPAD_HEIGHT });
+  const [viewport, setViewport] = useState({ w: 800, h: 600 });
+  const [mounted, setMounted] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
@@ -132,6 +138,60 @@ export function NotepadWindow({
   const [useNotepadIconFallback, setUseNotepadIconFallback] = useState(false);
   const dragStart = useRef({ x: 0, y: 0, left: 0, top: 0 });
   const resizeStart = useRef({ x: 0, y: 0, width: 0, height: 0 });
+  const sizeRef = useRef(size);
+  const posRef = useRef(pos);
+  sizeRef.current = size;
+  posRef.current = pos;
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    setViewport({ w: vw, h: vh });
+    const compact = vw < MOBILE_BREAKPOINT_PX;
+    if (compact) {
+      const width = Math.max(MIN_WIDTH, vw - MOBILE_PAD_X * 2);
+      const height = Math.max(MIN_HEIGHT, Math.min(NOTEPAD_HEIGHT, vh - TASKBAR_HEIGHT - MOBILE_PAD_Y * 2));
+      setSize({ width, height });
+      setPos({ x: MOBILE_PAD_X, y: MOBILE_PAD_Y });
+    } else {
+      setSize({ width: NOTEPAD_WIDTH, height: NOTEPAD_HEIGHT });
+      setPos({
+        x: Math.max(MOBILE_PAD_X, (vw - NOTEPAD_WIDTH) / 2),
+        y: Math.max(MOBILE_PAD_Y, (vh - NOTEPAD_HEIGHT - TASKBAR_HEIGHT - 24) / 2),
+      });
+    }
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || typeof window === "undefined") return;
+    const onResize = () => {
+      setViewport({ w: window.innerWidth, h: window.innerHeight });
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [mounted]);
+
+  /** Keep restored window inside the viewport (rotation, URL bar, etc.). */
+  useEffect(() => {
+    if (!mounted || isMaximized) return;
+    const vw = viewport.w;
+    const vh = viewport.h;
+    const compact = vw < MOBILE_BREAKPOINT_PX;
+    const padX = compact ? MOBILE_PAD_X : 4;
+    const padY = compact ? MOBILE_PAD_Y : 4;
+    const maxW = vw - padX * 2;
+    const maxH = vh - TASKBAR_HEIGHT - padY * 2;
+    const s = sizeRef.current;
+    const p = posRef.current;
+    const nw = Math.max(MIN_WIDTH, Math.min(s.width, maxW));
+    const nh = Math.max(MIN_HEIGHT, Math.min(s.height, maxH));
+    const nx = Math.max(padX, Math.min(p.x, vw - nw - padX));
+    const ny = Math.max(padY, Math.min(p.y, vh - nh - TASKBAR_HEIGHT - padY));
+    if (nw !== s.width || nh !== s.height) setSize({ width: nw, height: nh });
+    if (nx !== p.x || ny !== p.y) setPos({ x: nx, y: ny });
+  }, [viewport.w, viewport.h, mounted, isMaximized]);
 
   const toggleMaximize = useCallback(() => {
     if (isMaximized && restoreRect) {
@@ -165,19 +225,25 @@ export function NotepadWindow({
       if (isDragging) {
         const dx = e.clientX - dragStart.current.x;
         const dy = e.clientY - dragStart.current.y;
-        const w = typeof window !== "undefined" ? window.innerWidth : 800;
-        const h = typeof window !== "undefined" ? window.innerHeight : 600;
+        const iw = typeof window !== "undefined" ? window.innerWidth : 800;
+        const ih = typeof window !== "undefined" ? window.innerHeight : 600;
+        const compact = iw < MOBILE_BREAKPOINT_PX;
+        const padX = compact ? MOBILE_PAD_X : 0;
+        const padY = compact ? MOBILE_PAD_Y : 0;
         setPos({
-          x: Math.max(0, Math.min(w - size.width, dragStart.current.left + dx)),
-          y: Math.max(0, Math.min(h - 120, dragStart.current.top + dy)),
+          x: Math.max(padX, Math.min(iw - size.width - padX, dragStart.current.left + dx)),
+          y: Math.max(padY, Math.min(ih - size.height - TASKBAR_HEIGHT - padY, dragStart.current.top + dy)),
         });
       } else if (isResizing) {
         const dx = e.clientX - resizeStart.current.x;
         const dy = e.clientY - resizeStart.current.y;
-        const w = typeof window !== "undefined" ? window.innerWidth : 800;
-        const h = typeof window !== "undefined" ? window.innerHeight : 600;
-        const newWidth = Math.max(MIN_WIDTH, Math.min(w - pos.x, resizeStart.current.width + dx));
-        const newHeight = Math.max(MIN_HEIGHT, Math.min(h - pos.y - 40, resizeStart.current.height + dy));
+        const iw = typeof window !== "undefined" ? window.innerWidth : 800;
+        const ih = typeof window !== "undefined" ? window.innerHeight : 600;
+        const compact = iw < MOBILE_BREAKPOINT_PX;
+        const padX = compact ? MOBILE_PAD_X : 4;
+        const padY = compact ? MOBILE_PAD_Y : 4;
+        const newWidth = Math.max(MIN_WIDTH, Math.min(iw - pos.x - padX, resizeStart.current.width + dx));
+        const newHeight = Math.max(MIN_HEIGHT, Math.min(ih - pos.y - TASKBAR_HEIGHT - padY, resizeStart.current.height + dy));
         setSize({ width: newWidth, height: newHeight });
       }
     };
@@ -205,12 +271,16 @@ export function NotepadWindow({
   const title = project ? `${project.title} - Notepad` : "Untitled - Notepad";
   const bodyMarkdown = project ? projectToNotepadMarkdown(project) : "";
 
+  const isCompactLayout = viewport.w < MOBILE_BREAKPOINT_PX;
+
   const containerStyle: React.CSSProperties = {
     position: "fixed",
     left: isMaximized ? 0 : pos.x,
     top: isMaximized ? 0 : pos.y,
-    width: size.width,
-    height: size.height,
+    width: isMaximized ? viewport.w : size.width,
+    height: isMaximized ? viewport.h - TASKBAR_HEIGHT : size.height,
+    maxWidth: isCompactLayout || isMaximized ? "100vw" : undefined,
+    boxSizing: "border-box",
     minWidth: isMaximized ? undefined : MIN_WIDTH,
     minHeight: isMaximized ? undefined : MIN_HEIGHT,
     display: hidden ? "none" : "flex",
@@ -224,6 +294,8 @@ export function NotepadWindow({
     zIndex,
     ...style,
   };
+
+  if (!mounted) return null;
 
   return (
     <div style={containerStyle} className="notepad-window" role="dialog" aria-label={title} onMouseDown={onBringToFront}>
@@ -242,7 +314,7 @@ export function NotepadWindow({
           cursor: isMaximized ? "default" : "move",
         }}
       >
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <span className="flex-shrink-0 text-white [&_svg]:text-white">
             {useNotepadIconFallback ? (
               <NotepadIconSvg />
@@ -262,14 +334,14 @@ export function NotepadWindow({
 
       {/* Menu bar */}
       <div
-        className="flex items-center gap-5 pl-3 h-6 flex-shrink-0 bg-[#ece9d8] border-b border-[#ccc]"
+        className="flex min-w-0 items-center gap-4 overflow-x-auto overflow-y-hidden whitespace-nowrap pl-3 h-6 flex-shrink-0 bg-[#ece9d8] border-b border-[#ccc] [scrollbar-width:thin] sm:gap-5"
         style={{ fontFamily: FONT_XP_UI, fontSize: FONT_SIZE_XP.standard }}
       >
-        <span className="cursor-pointer hover:underline">File</span>
-        <span className="cursor-pointer hover:underline">Edit</span>
-        <span className="cursor-pointer hover:underline">Format</span>
-        <span className="cursor-pointer hover:underline">View</span>
-        <span className="cursor-pointer hover:underline">Help</span>
+        <span className="flex-shrink-0 cursor-pointer hover:underline">File</span>
+        <span className="flex-shrink-0 cursor-pointer hover:underline">Edit</span>
+        <span className="flex-shrink-0 cursor-pointer hover:underline">Format</span>
+        <span className="flex-shrink-0 cursor-pointer hover:underline">View</span>
+        <span className="flex-shrink-0 cursor-pointer hover:underline">Help</span>
       </div>
 
       {/* Content area — white, scrollable, Markdown-rendered (XP Notepad used monospace) */}
