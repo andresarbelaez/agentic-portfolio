@@ -5,6 +5,9 @@
 - **Founder, After School Records** (2023–Present)  
   Built an independent music and technology platform focused on artist ownership and fan engagement. Worked hands-on with web3 technologies, including writing smart contracts for music distribution and experimenting with blockchain-based community and revenue models. Combined product thinking, engineering, and creative strategy.
 
+- **Confidant — Offline AI Assistant** (Personal, open source)  
+  Sole designer and developer of a privacy-first desktop app for sensitive health and legal questions: all inference and retrieval run locally with no network access for queries. Shipped with Tauri 2.0, React, TypeScript, and Rust; implemented RAG with ChromaDB and sentence-transformers; integrated quantized local models (e.g. Mistral, Llama) via llama.cpp through a Python subprocess. Iterated the product from early Python/Raspberry Pi experiments through web to the current desktop experience. https://confidant.one/
+
 - **Product Designer, Meta** (2019–2021)  
   Worked on "Lift Testing", a Meta Ads A/B testing tool used by Meta's largest advertisers. Partnered closely with product managers, engineers, and researchers to simplify complex Lift Results dashboards and make Lift Tests as actionable as possible. Focused on system-level thinking, usability at scale, and cross-functional execution.
 
@@ -55,6 +58,9 @@
 - Creator economy platforms  
 - Design Tools (Figma, Sketch, Adobe Creative Cloud)
 - AI Prototyping tools (Cursor, Claude, Vercel, Figma Make) 
+- RAG and vector retrieval (e.g. ChromaDB, embeddings pipelines)
+- Local / on-device LLMs (llama.cpp, GGUF, privacy-first architectures)
+- Tauri and Rust (desktop)
 - Music technology systems
 - Music DAWs (Logic Pro X, Garageband, Bandlab)
 

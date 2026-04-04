@@ -21,6 +21,22 @@ const AIM_INTRO_MESSAGES = [
   "What would you like to learn about Andres?",
 ] as const;
 
+/** Per-character delay for intro “typing”; lower = faster. */
+const AIM_INTRO_CHAR_MS = 20;
+/** Pause after a segment finishes before the next one starts. */
+const AIM_INTRO_SEGMENT_GAP_MS = 250;
+
+/** Placeholder prompts; replace with real copy when ready. Shown until the user sends their first message. */
+/** Suggested prompts for recruiters / hiring managers (horizontal chips). */
+const AIM_STARTER_QUESTIONS = [
+  "Does Andres have experience with AI?",
+  "Does Andres have mobile experience?",
+  "Does Andres have design systems experience?",
+] as const;
+
+const STARTER_CHIP_STAGGER_MS = 500;
+const STARTER_CHIP_MOTION_MS = 600;
+
 const PROJECT_LINK_PREFIX = "project:";
 
 type ChatBlockProps = {
@@ -73,7 +89,14 @@ export function ChatBlock({
     },
   };
   const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  /** After first user message: fade out starter chips, then unmount strip. */
+  const [starterStripPhase, setStarterStripPhase] = useState<"visible" | "hiding" | "gone">("visible");
+  /** Triggers staggered fade-in-up on each starter chip after intro completes. */
+  const [starterChipsShown, setStarterChipsShown] = useState(false);
+  /** True after the last chip’s motion finishes (enables clicks). */
+  const [starterChipsInteractive, setStarterChipsInteractive] = useState(false);
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
@@ -109,12 +132,12 @@ export function ChatBlock({
       const nextTimer = setTimeout(() => {
         setIntroSegmentIndex((i) => i + 1);
         setTypedSegmentText("");
-      }, 400);
+      }, AIM_INTRO_SEGMENT_GAP_MS);
       return () => clearTimeout(nextTimer);
     }
     const typingInterval = setInterval(() => {
       setTypedSegmentText((current) => fullSegment.slice(0, current.length + 1));
-    }, 30);
+    }, AIM_INTRO_CHAR_MS);
     return () => clearInterval(typingInterval);
   }, [isAimLayout, showPrefix, messages.length, introSegmentIndex, typedSegmentText]);
 
@@ -124,6 +147,38 @@ export function ChatBlock({
   useEffect(() => {
     onBusyChange?.(busy);
   }, [busy, onBusyChange]);
+
+  const hasUserMessage = messages.some((m) => m.role === "user");
+  useEffect(() => {
+    if (!isAimLayout || !hasUserMessage || starterStripPhase !== "visible") return;
+    setStarterStripPhase("hiding");
+    const t = window.setTimeout(() => setStarterStripPhase("gone"), 320);
+    return () => window.clearTimeout(t);
+  }, [isAimLayout, hasUserMessage, starterStripPhase]);
+
+  useEffect(() => {
+    if (!isAimLayout || starterStripPhase !== "visible") {
+      setStarterChipsShown(false);
+      setStarterChipsInteractive(false);
+      return;
+    }
+    if (!introComplete) {
+      setStarterChipsShown(false);
+      setStarterChipsInteractive(false);
+      return;
+    }
+    setStarterChipsShown(false);
+    setStarterChipsInteractive(false);
+    const kick = window.setTimeout(() => setStarterChipsShown(true), 40);
+    const n = AIM_STARTER_QUESTIONS.length;
+    const interactiveAfter =
+      40 + Math.max(0, n - 1) * STARTER_CHIP_STAGGER_MS + STARTER_CHIP_MOTION_MS;
+    const enable = window.setTimeout(() => setStarterChipsInteractive(true), interactiveAfter);
+    return () => {
+      clearTimeout(kick);
+      clearTimeout(enable);
+    };
+  }, [isAimLayout, introComplete, starterStripPhase]);
 
   useEffect(() => {
     const el = scrollContainerRef.current;
@@ -139,11 +194,8 @@ export function ChatBlock({
     setInput("");
   }
 
-  const messagesArea = (
-    <div
-      ref={scrollContainerRef}
-      className={`flex flex-col gap-1 ${embedded ? "flex-1 overflow-y-auto min-h-0" : "max-h-80 overflow-y-auto"} ${isAimLayout ? "bg-white p-2 border-b border-[#ccc]" : ""}`}
-    >
+  const messageListInner = (
+    <>
       {messages.length === 0 && !isAimLayout && (
         <p className="py-2 text-sm text-neutral-400">Send a message to start.</p>
       )}
@@ -251,6 +303,64 @@ export function ChatBlock({
           </div>
         )
       )}
+    </>
+  );
+
+  /** Non-AIM embedded / standalone message list */
+  const messagesArea = (
+    <div
+      ref={scrollContainerRef}
+      className={`flex flex-col gap-1 ${embedded ? "min-h-0 flex-1 overflow-y-auto" : "max-h-80 overflow-y-auto"}`}
+    >
+      {messageListInner}
+    </div>
+  );
+
+  /** AIM: one white column — scroll fills space; starter row collapses to h-0 while fading so it does not steal flex space */
+  const aimTranscriptColumn = (
+    <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden border-b border-[#ccc] bg-white">
+      <div
+        ref={scrollContainerRef}
+        className="flex min-h-0 min-w-0 flex-1 flex-col gap-1 overflow-y-auto p-2"
+      >
+        {messageListInner}
+      </div>
+      {starterStripPhase !== "gone" && introComplete && (
+        <div
+          className={`flex flex-shrink-0 flex-col justify-center overflow-hidden bg-white transition-[height,opacity,padding] duration-300 ease-out ${
+            starterStripPhase === "hiding"
+              ? "pointer-events-none h-0 min-h-0 py-0 opacity-0"
+              : "h-12 py-0 opacity-100"
+          }`}
+          style={{ fontFamily: FONT_AIM }}
+          aria-hidden={starterStripPhase === "hiding"}
+        >
+          <div className="flex min-h-0 w-full items-center overflow-x-auto overflow-y-hidden px-2 py-1.5 [scrollbar-width:thin]">
+            <div className="flex flex-nowrap items-center gap-2">
+              {AIM_STARTER_QUESTIONS.map((q, index) => (
+                <button
+                  key={q}
+                  type="button"
+                  disabled={busy || starterStripPhase === "hiding" || !starterChipsInteractive}
+                  onClick={() => {
+                    setInput(q);
+                    inputRef.current?.focus();
+                  }}
+                  className={`flex-shrink-0 whitespace-nowrap rounded border border-[#ccc] bg-[#f5f5f5] px-2.5 py-1 text-left text-xs text-neutral-800 shadow-sm transition-[opacity,transform] ease-out hover:bg-[#eaeaea] disabled:cursor-default ${
+                    starterChipsShown ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
+                  }`}
+                  style={{
+                    transitionDuration: `${STARTER_CHIP_MOTION_MS}ms`,
+                    transitionDelay: starterChipsShown ? `${index * STARTER_CHIP_STAGGER_MS}ms` : "0ms",
+                  }}
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -268,6 +378,7 @@ export function ChatBlock({
       style={isAimLayout ? { fontFamily: FONT_AIM } : undefined}
     >
       <input
+        ref={isAimLayout ? inputRef : undefined}
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -291,10 +402,10 @@ export function ChatBlock({
   if (embedded) {
     if (isAimLayout) {
       return (
-        <div className="flex flex-col h-full min-h-0 flex-1">
-          {messagesArea}
+        <div className="grid h-full min-h-0 w-full min-w-0 grid-rows-[minmax(0,1fr)_auto_auto] overflow-hidden">
+          {aimTranscriptColumn}
           {/* Formatting toolbar: A A B I U link image smiley */}
-          <div className="flex items-center gap-0.5 px-2 py-1 bg-[#ece9d8] border-b border-[#ccc] flex-shrink-0" style={{ fontFamily: FONT_AIM }}>
+          <div className="flex items-center gap-0.5 px-2 py-1 bg-[#ece9d8] border-b border-[#ccc]" style={{ fontFamily: FONT_AIM }}>
             <button type="button" className="w-6 h-6 flex items-center justify-center text-xs border border-transparent hover:bg-[#d0d0d0] rounded" title="Decrease font size">A</button>
             <button type="button" className="w-6 h-6 flex items-center justify-center text-xs font-bold border border-transparent hover:bg-[#d0d0d0] rounded" title="Increase font size">A</button>
             <button type="button" className="w-6 h-6 flex items-center justify-center text-xs font-bold border border-transparent hover:bg-[#d0d0d0] rounded" title="Bold">B</button>

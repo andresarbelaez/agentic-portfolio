@@ -1,0 +1,19 @@
+---
+description: After editing RAG source files, remind to refresh embeddings with npm run ingest
+globs:
+  - content/resume.md
+  - content/projects.json
+alwaysApply: false
+---
+
+# RAG / embeddings
+
+`content/resume.md` and `content/projects.json` are ingested into `data/embeddings.json` for the chat agent.
+
+**Whenever you change either file in this session**, end your reply with a short reminder for the user:
+
+- Run **`npm run ingest`** (uses `.env.local` → `OPENAI_API_KEY` when set).
+- Optionally keep **`npm run ingest:watch`** running in another terminal while editing.
+- **Commit `data/embeddings.json`** when they want production (e.g. Vercel) to match; Vercel does not run ingest.
+
+Do not assume embeddings updated themselves.

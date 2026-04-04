@@ -186,7 +186,6 @@
         "product design",
         "web development",
         "mobile optimization",
-        "mobile development",
         "rapid prototyping",
         "growth design",
         "growth strategy",
@@ -194,7 +193,7 @@
         "frontend development"
       ],
       "summary": "A landing page for a pre-seed scientific research AI startup, completed during a two-week sprint.",
-      "images": [],
+      "images": ["/projects/beakr-landing.png"],
       "videos": [],
       "Tools Used": ["Cursor", "Claude Code", "GitHub", "Vercel"],
       "Tech Stack": ["Next.js", "TypeScript", "Three.js"],

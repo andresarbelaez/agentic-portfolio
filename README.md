@@ -74,6 +74,8 @@ git add data/embeddings.json
 git commit -m "Refresh embeddings"
 ```
 
+**Auto-refresh while editing:** in a second terminal, run `npm run ingest:watch`. It watches `content/resume.md` and `content/projects.json` and re-runs `npm run ingest` after you save (debounced). You still **commit** `data/embeddings.json` when you want production updated.
+
 Vercel does **not** run ingest; **`data/embeddings.json`** must be in the repo (or otherwise available at build/runtime) for retrieval to work on the live site.
 
 ## Deploy to Vercel

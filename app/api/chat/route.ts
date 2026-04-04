@@ -1,5 +1,6 @@
 import { findRelevantChunks } from "@/lib/retrieve";
 import { getProjects } from "@/lib/projects";
+import { projectMatchesAiExperienceRetrieval } from "@/lib/ai-dev-context";
 import { streamText, convertToModelMessages, generateId } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOllama } from "ollama-ai-provider-v2";
@@ -44,6 +45,37 @@ function lastUserText(messages: Array<{ role?: string; content?: unknown; parts?
   return "";
 }
 
+function normalizePart(p: { type?: string; text?: string }): { type: string; text?: string } {
+  const t = typeof p.type === "string" && p.type.length > 0 ? p.type : "text";
+  return { type: t, text: p.text };
+}
+
+/** AI SDK v6 `convertToModelMessages` requires `parts` with required `type`; older payloads may omit it. */
+function normalizeUiMessagesForSdk(
+  messages: Array<{ role?: string; content?: unknown; parts?: Array<{ type?: string; text?: string }> }>
+): Array<{ role?: string; content?: unknown; parts: Array<{ type: string; text?: string }> }> {
+  return messages.map((m) => {
+    if (m.parts && Array.isArray(m.parts) && m.parts.length > 0) {
+      return { ...m, parts: m.parts.map(normalizePart) };
+    }
+    const role = m.role;
+    let text = "";
+    if (typeof m.content === "string") text = m.content;
+    else if (Array.isArray(m.content)) {
+      text = (m.content as Array<{ type?: string; text?: string }>)
+        .map((p) => (p.type === "text" ? (p.text ?? "") : ""))
+        .join("");
+    }
+    if ((role === "user" || role === "assistant" || role === "system") && text) {
+      return { ...m, parts: [{ type: "text", text }] };
+    }
+    if (Array.isArray(m.parts)) {
+      return { ...m, parts: m.parts.map(normalizePart) };
+    }
+    return { ...m, parts: [] };
+  });
+}
+
 export async function POST(req: Request) {
   try {
     if (process.env.NODE_ENV === "production" && !process.env.OPENAI_API_KEY) {
@@ -65,20 +97,29 @@ export async function POST(req: Request) {
 
     let context = "";
     if (query) {
-      const projects = await getProjects();
-      const aiProjectSlugs = projects
-        .filter((p) => p.topics?.some((t) => t.toUpperCase() === "AI"))
-        .map((p) => p.slug);
-      const isAiQuery = /\bAI\b|artificial intelligence|AI project|AI experience|AI work/i.test(query);
-      const forceIncludeSlugs = isAiQuery && aiProjectSlugs.length > 0 ? aiProjectSlugs : undefined;
-      const chunks = await findRelevantChunks(query, 10, forceIncludeSlugs);
-      context = chunks.length ? chunks.map((c) => c.content).join("\n\n---\n\n") : "";
+      try {
+        const projects = await getProjects();
+        const aiProjectSlugs = projects.filter((p) => projectMatchesAiExperienceRetrieval(p)).map((p) => p.slug);
+        const isAiQuery =
+          /\bAI\b|artificial intelligence|AI project|AI experience|AI work|cursor|claude code|copilot|chatgpt|LLM|RAG|agentic/i.test(
+            query
+          );
+        const forceIncludeSlugs = isAiQuery && aiProjectSlugs.length > 0 ? aiProjectSlugs : undefined;
+        const chunks = await findRelevantChunks(query, 10, forceIncludeSlugs);
+        context = chunks.length ? chunks.map((c) => c.content).join("\n\n---\n\n") : "";
+      } catch (retrieveErr) {
+        const msg = retrieveErr instanceof Error ? retrieveErr.message : String(retrieveErr);
+        console.error("[chat route] RAG retrieve/embed failed; continuing without context:", msg);
+      }
     }
     const groundingRule =
       "Factual claims (roles, dates, projects, companies, skills, tools, technologies, technical requirements) must come only from the Context below. Do not invent or infer facts. Never use placeholders like [date] or [company]—use the exact dates and names from the Context (e.g. 2019–2021, Meta). **CRITICAL: Do not confuse skills with roles.** If the Context mentions 'design engineering' as a skill, that does NOT mean Andrés held a 'Design Engineer' role. Only mention roles that are explicitly stated in the Context (e.g., 'Product Designer', 'Software Engineering Intern'). Never infer roles from skills, project descriptions, or job responsibilities. **Never assume or invent tools, technologies, or technical requirements** (e.g., Figma, Webflow, React, specific frameworks, design tools, or development tools) unless they are explicitly mentioned in the Context. If the Context does not mention what tools or technologies were used, say you don't have that information rather than assuming common tools. Keep responses concise and avoid redundancy. If the Context does not contain the answer, say you don't have that information.";
     const system = `${baseSystem}${context ? `\n\n## Context (use only this to answer)\n\n${groundingRule}\n\n${context}` : ""}`;
 
-    const modelMessages = await convertToModelMessages(messages as Parameters<typeof convertToModelMessages>[0]);
+    const normalizedMessages = normalizeUiMessagesForSdk(messages);
+    const modelMessages = await convertToModelMessages(
+      normalizedMessages as Parameters<typeof convertToModelMessages>[0]
+    );
 
     const result = streamText({
       model: useOpenAI ? openai(OPENAI_CHAT_MODEL) : ollama(OLLAMA_CHAT_MODEL),
@@ -88,7 +129,7 @@ export async function POST(req: Request) {
 
     return result.toUIMessageStreamResponse({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      originalMessages: messages as any,
+      originalMessages: normalizedMessages as any,
       generateMessageId: () => generateId(),
     });
   } catch (err) {

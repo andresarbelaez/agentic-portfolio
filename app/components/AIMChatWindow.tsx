@@ -173,17 +173,20 @@ export function AIMChatWindow({ screenName = "website_visitor_1", onMinimize, on
       </div>
 
       {/* Message area → formatting toolbar → input (ChatBlock); bottom bar has Send */}
-      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-        <ChatBlock
-          key={chatKey}
-          embedded
-          embeddedLayout="aim"
-          aimUserLabel={screenName}
-          aimAssistantLabel="L-997"
-          onBusyChange={setIsLoading}
-          onOpenProject={onOpenProject}
-          projects={projects}
-        />
+      {/* relative + absolute inset-0: gives ChatBlock a definite height (flex % height is flaky). Beige fills any sub-pixel gap so Bliss doesn't show through. */}
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-white">
+        <div className="absolute inset-0 flex min-h-0 flex-col overflow-hidden">
+          <ChatBlock
+            key={chatKey}
+            embedded
+            embeddedLayout="aim"
+            aimUserLabel={screenName}
+            aimAssistantLabel="L-997"
+            onBusyChange={setIsLoading}
+            onOpenProject={onOpenProject}
+            projects={projects}
+          />
+        </div>
       </div>
 
       {/* Bottom button bar: Warn, Block, Add Buddy, Talk, Get Info, [status strip], Send */}
