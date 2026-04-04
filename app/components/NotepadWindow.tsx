@@ -24,15 +24,19 @@ function NotepadIconSvg({ className }: { className?: string }) {
   );
 }
 
+function hasProjectLink(project: Project): boolean {
+  return Boolean(project.url && project.url !== "NA");
+}
+
 /** Formats a project as Markdown for the content area (supports **bold**, *italic*, links, etc.) */
 function projectToNotepadMarkdown(project: Project): string {
-  const sections: string[] = [
-    `# ${project.title}`,
-    "",
-    "## Summary",
-    project.summary,
-    "",
-  ];
+  const sections: string[] = [`# ${project.title}`, ""];
+
+  if (hasProjectLink(project)) {
+    sections.push(`[${project.url}](${project.url})`, "");
+  }
+
+  sections.push("## Summary", project.summary, "");
   
   if (project.context) {
     sections.push("## Context", project.context, "");
@@ -69,12 +73,7 @@ function projectToNotepadMarkdown(project: Project): string {
   if (project.notes) {
     sections.push("## Notes", project.notes, "");
   }
-  
-  // Only add Link section if URL is not "NA"
-  if (project.url && project.url !== "NA") {
-    sections.push("## Link", `[${project.url}](${project.url})`);
-  }
-  
+
   // Note: evidence is intentionally NOT rendered - it's only used for agent context
   return sections.join("\n");
 }
@@ -346,7 +345,12 @@ export function NotepadWindow({
                 h2: ({ children }) => <h2 className="text-base font-semibold mt-3 mb-1">{children}</h2>,
                 p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
                 a: ({ href, children }) => (
-                  <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800">
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-base font-bold text-blue-700 underline decoration-2 underline-offset-2 hover:text-blue-900"
+                  >
                     {children}
                   </a>
                 ),

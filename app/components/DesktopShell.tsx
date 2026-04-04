@@ -220,7 +220,7 @@ export function DesktopShell({ projects, presentationAlbums = [] }: { projects: 
         <button
           type="button"
           onClick={() => {
-            window.open("https://resume-beige-mu.vercel.app/resume.pdf", "_blank", "noopener,noreferrer");
+            window.open("/Andres_Arbelaez_Resume.pdf", "_blank", "noopener,noreferrer");
           }}
           className="flex flex-col items-center w-20 group border-0 bg-transparent p-0 cursor-pointer"
         >

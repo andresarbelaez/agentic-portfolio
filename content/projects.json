@@ -134,7 +134,7 @@
     {
       "title": "Confidant - Offline AI Assistant",
       "slug": "confidant-offline-ai-assistant",
-      "url": "NA",
+      "url": "https://confidant.one/",
       "skills": ["product design", "full-stack development", "RAG", "AI integration", "privacy engineering", "local LLM", "vector embeddings", "desktop development", "Rust", "TypeScript", "React", "Python", "health technology", "legal technology"],
       "summary": "An open-source, privacy-first AI assistant that provides offline AI health consultation. All processing happens locally with no network access for queries.",
       "context": "Confidant is an AI assistant optimized for health and legal questions, running completely offline using local LLMs and RAG over a knowledge base.",
@@ -144,7 +144,7 @@
       "Impact": "Demonstrates expertise in privacy engineering, local AI deployment, RAG systems, and desktop app development. The project has evolved from Python/Raspberry Pi to web app to desktop app, showing iterative product development.",
       "images": [],
       "videos": [],
-      "Tools Used": ["Tauri 2.0", "Cursor", "GitHub", "ChromaDB", "sentence-transformers", "llama.cpp", "Python"],
+      "Tools Used": ["Cursor", "GitHub", "ChromaDB", "sentence-transformers", "llama.cpp", "Python"],
       "Tech Stack": ["Tauri 2.0", "React", "TypeScript", "Rust", "Python", "ChromaDB", "sentence-transformers", "llama.cpp", "GGUF quantization", "Mistral-7B-Instruct", "Llama-3.2-3B"],
       "notes": "",
       "role": "Independent",
@@ -176,6 +176,35 @@
       "featured": false,
       "hidden": true,
       "topics": ["AI", "web", "web design", "Cursor", "Vercel", "GitHub", "OpenAI API", "Ollama", "Next.js 14", "React 18", "TypeScript", "Tailwind CSS", "Vercel AI SDK", "OpenAI", "react-markdown"]
+    },
+    {
+      "title": "Web Development for Beakr, a scientific research startup",
+      "slug": "beakr",
+      "url": "https://www.thebeakr.com/",
+      "skills": [
+        "design engineering",
+        "product design",
+        "web development",
+        "mobile optimization",
+        "mobile development",
+        "rapid prototyping",
+        "growth design",
+        "growth strategy",
+        "enterprise design",
+        "frontend development"
+      ],
+      "summary": "A landing page for a pre-seed scientific research AI startup, completed during a two-week sprint.",
+      "images": [],
+      "videos": [],
+      "Tools Used": ["Cursor", "Claude Code", "GitHub", "Vercel"],
+      "Tech Stack": ["Next.js", "TypeScript", "Three.js"],
+      "My Role": "Sole designer and developer, working with the Beakr founding team.",
+      "notes": "",
+      "role": "Designer & Developer",
+      "company": "Beakr",
+      "evidence": "Shows product design, design engineering and front-end development skills through building and shipping a complete landing page for a serious AI startup",
+      "featured": false,
+      "topics": ["AI", "web", "website"]
     }
   ]
 }
