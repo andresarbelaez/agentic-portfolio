@@ -14,8 +14,9 @@ Place your `.ico` files in this folder. The app will use them for desktop and wi
 | `start.ico`    | Taskbar Start button |
 | `help.ico`     | Sign On window Help button |
 | `setup.ico`    | Sign On window Setup (wrench) button |
-| `key.ico`      | Sign On window, next to “ScreenName” label |
+| `key.ico`      | Sign On window, next to "ScreenName" label |
+| `portfolio.ico`| Portfolio / presentation app (desktop icon and window) | “ScreenName” label |
 
-Each spot uses the `.ico` when present and falls back to the built-in SVG/text if the file is missing or fails to load.
+Each spot uses the `.ico` when present and falls back to the built-in SVG/text if the file is missing or fails to load. Most icons are `.ico`; `.png` is also supported for custom icons.
 
-You can add more and reference them via `iconPath('your-name')` in `lib/icons.ts`. Name the file `your-name.ico`.
+You can add more and reference them via `iconPath('your-name')` in `lib/icons.ts`. Name the file `your-name.ico` or `your-name.png`.

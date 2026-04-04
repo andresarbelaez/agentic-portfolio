@@ -28,16 +28,26 @@ type XPTitleBarButtonsProps = {
   onMaximize?: () => void;
   onClose?: () => void;
   isMaximized?: boolean;
+  /** Use "light" for light/grey title bars (e.g. iTunes-style); "dark" for blue XP bar. */
+  variant?: "dark" | "light";
 };
 
-export function XPTitleBarButtons({ onMinimize, onMaximize, onClose, isMaximized = false }: XPTitleBarButtonsProps) {
+const lightBtnBase: React.CSSProperties = {
+  ...btnBase,
+  background: "rgba(0, 0, 0, 0.08)",
+  border: "1px solid #808080",
+  color: "#333",
+};
+
+export function XPTitleBarButtons({ onMinimize, onMaximize, onClose, isMaximized = false, variant = "dark" }: XPTitleBarButtonsProps) {
+  const base = variant === "light" ? lightBtnBase : btnBase;
   return (
     <div style={{ display: "flex", flexShrink: 0, gap: 6 }}>
       <button
         type="button"
         aria-label="Minimize"
         onClick={onMinimize}
-        style={btnBase}
+        style={base}
         className="xp-title-btn-min"
       >
         <svg width={10} height={5} viewBox="0 0 10 5" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
@@ -48,7 +58,7 @@ export function XPTitleBarButtons({ onMinimize, onMaximize, onClose, isMaximized
         type="button"
         aria-label={isMaximized ? "Restore" : "Maximize"}
         onClick={onMaximize}
-        style={btnBase}
+        style={base}
         className="xp-title-btn-max"
       >
         {isMaximized ? (
@@ -67,7 +77,7 @@ export function XPTitleBarButtons({ onMinimize, onMaximize, onClose, isMaximized
         aria-label="Close"
         onClick={onClose}
         style={{
-          ...btnBase,
+          ...base,
           background: BTN_CLOSE_FILL,
           color: "#fff",
         }}

@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import type { Project } from "@/types/project";
+import type { PresentationAlbum } from "@/types/presentation";
 import { iconPath } from "@/lib/icons";
 import { FONT_XP_UI } from "@/lib/xp-fonts";
 import { AIMChatWindow } from "./AIMChatWindow";
 import { AIMSignOnWindow } from "./AIMSignOnWindow";
 import { NotepadWindow } from "./NotepadWindow";
+import { PresentationWindow } from "./PresentationWindow";
 
 function FolderIconSvg({ className }: { className?: string }) {
   return (
@@ -100,7 +102,31 @@ function FileIcon({ className }: { className?: string }) {
   );
 }
 
-export function DesktopShell({ projects }: { projects: Project[] }) {
+/** iTunes-style music note fallback when portfolio.ico is missing or fails to load. */
+function PortfolioIconSvg({ className }: { className?: string }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width={32} height={32} fill="currentColor" stroke="currentColor" strokeWidth="0.5">
+      <path d="M16 4v12.36c-.6-.4-1.3-.68-2-.8V8L10 10v9c0 2.76 2.24 5 5 5s5-2.24 5-5V10l-4-6zm2 10.36V6.94l6 3v9.42c0 2.76-2.24 5-5 5s-5-2.24-5-5c0-2.76 2.24-5 5-5 .9 0 1.74.24 2.48.64V14.36z" />
+    </svg>
+  );
+}
+
+function PortfolioIcon({ className, size = 32 }: { className?: string; size?: number }) {
+  const [useFallback, setUseFallback] = useState(false);
+  if (useFallback) return <PortfolioIconSvg className={className} />;
+  return (
+    <img
+      src={iconPath("portfolio")}
+      alt="Portfolio"
+      className={className}
+      width={size}
+      height={size}
+      onError={() => setUseFallback(true)}
+    />
+  );
+}
+
+export function DesktopShell({ projects, presentationAlbums = [] }: { projects: Project[]; presentationAlbums?: PresentationAlbum[] }) {
   const [aimMinimized, setAimMinimized] = useState(false);
   const [aimClosed, setAimClosed] = useState(false);
   // Start with chat open; Sign On flow is hidden (code kept below, gated by !loggedIn).
@@ -108,12 +134,14 @@ export function DesktopShell({ projects }: { projects: Project[] }) {
   const [screenName, setScreenName] = useState("website_visitor_1");
   const [notepadProject, setNotepadProject] = useState<Project | null>(null);
   const [notepadMinimized, setNotepadMinimized] = useState(false);
+  const [presentationOpen, setPresentationOpen] = useState(false);
+  const [presentationMinimized, setPresentationMinimized] = useState(false);
   const [useStartIconFallback, setUseStartIconFallback] = useState(false);
   const [useWindowsXPIconFallback, setUseWindowsXPIconFallback] = useState(false);
   const [useAimTaskbarFallback, setUseAimTaskbarFallback] = useState(false);
   const [useNotepadTaskbarFallback, setUseNotepadTaskbarFallback] = useState(false);
-  // Which window is on top when both are open; last-clicked wins.
-  const [frontWindow, setFrontWindow] = useState<"aim" | "notepad">("aim");
+  // Which window is on top when multiple are open; last-clicked wins.
+  const [frontWindow, setFrontWindow] = useState<"aim" | "notepad" | "presentation">("aim");
   const [currentTime, setCurrentTime] = useState("1:00 PM");
   // Key to reset chat when reopening
   const [aimChatKey, setAimChatKey] = useState(0);
@@ -209,6 +237,31 @@ export function DesktopShell({ projects }: { projects: Project[] }) {
           </span>
         </button>
 
+        {/* Portfolio Presentation (iTunes-style) */}
+        {presentationAlbums.length > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              setPresentationOpen(true);
+              setPresentationMinimized(false);
+              setFrontWindow("presentation");
+            }}
+            className="flex flex-col items-center w-20 group border-0 bg-transparent p-0 cursor-pointer text-white"
+          >
+            <div className="flex justify-center items-center w-14 h-14 rounded group-hover:bg-white/20 transition-colors [&_svg]:drop-shadow-md">
+              <PortfolioIcon className="drop-shadow-md" size={48} />
+            </div>
+            <span
+              className="text-xs mt-1 text-center max-w-full truncate px-1"
+              style={{
+                textShadow: "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 2px #000, 0 0 2px #000",
+              }}
+            >
+              Portfolio
+            </span>
+          </button>
+        )}
+
         {/* Project folders */}
         {projects.map((p) => (
           <button
@@ -277,6 +330,18 @@ export function DesktopShell({ projects }: { projects: Project[] }) {
             }
           }}
           projects={projects}
+        />
+      )}
+
+      {/* Portfolio Presentation window */}
+      {presentationOpen && (
+        <PresentationWindow
+          albums={presentationAlbums}
+          onClose={() => setPresentationOpen(false)}
+          onMinimize={() => setPresentationMinimized(true)}
+          hidden={presentationMinimized}
+          zIndex={frontWindow === "presentation" ? 55 : 48}
+          onBringToFront={() => setFrontWindow("presentation")}
         />
       )}
 
@@ -366,6 +431,24 @@ export function DesktopShell({ projects }: { projects: Project[] }) {
               <img src={iconPath("notepad")} alt="" width={16} height={16} onError={() => setUseNotepadTaskbarFallback(true)} className="w-4 h-4 flex-shrink-0 object-contain" />
             )}
             {notepadProject.title} – Notepad
+          </button>
+        )}
+        {presentationOpen && presentationMinimized && (
+          <button
+            type="button"
+            onClick={() => {
+              setPresentationMinimized(false);
+              setFrontWindow("presentation");
+            }}
+            className="h-7 px-3 flex items-center gap-1.5 border border-[#1a5fd4] rounded-sm text-white text-sm font-bold shadow-sm hover:brightness-110"
+            style={{
+              background: "linear-gradient(180deg, #3a6ea5 0%, #2d5a87 100%)",
+            }}
+          >
+            <span className="w-4 h-4 flex-shrink-0 flex items-center justify-center text-white">
+              <PortfolioIcon size={16} />
+            </span>
+            Portfolio Presentation
           </button>
         )}
         <div className="flex-1" />

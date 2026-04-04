@@ -1,0 +1,78 @@
+{
+  "description": "iTunes Windows reference — layout, spacing, colors, typography.",
+  "source": "itunes-windows-full-playback-sidebar.png",
+  "window": {
+    "titleBar": { "height": 26 },
+    "menuBar": { "height": 22 }
+  },
+  "toolbar": {
+    "height": 68,
+    "paddingHorizontal": 12,
+    "gap": 8,
+    "center": {
+      "nowPlaying": {
+        "background": "#EAEDDB",
+        "backgroundGradient": ["#F7F8F1", "#EAEDDB", "#DFE2D0"],
+        "border": "1px solid #D0D0D0",
+        "borderRadius": 8,
+        "maxWidth": 280,
+        "padding": { "top": 8, "right": 12, "bottom": 8, "left": 12 },
+        "text": {
+          "line1": { "size": 10, "color": "#666666" },
+          "line2": { "size": 13, "weight": "bold", "color": "#4D4D4D" },
+          "line3": { "size": 11, "color": "#666666" }
+        },
+        "progressBar": { "height": 10, "trackColor": "#999999", "timeColor": "#666666", "timeSize": 10 }
+      }
+    },
+    "right": {
+      "viewModeButtons": { "size": 30 },
+      "searchBar": { "width": 160, "height": 28 }
+    }
+  },
+  "leftSidebar": {
+    "width": 240,
+    "background": "#D9DEE7",
+    "backgroundGradient": ["#f2f0eb", "#e5e3de", "#dddcd6"],
+    "sectionHeader": { "fontSize": 10, "paddingVertical": 6, "paddingHorizontal": 8, "color": "#6d6d6d", "borderBottom": "1px solid #c8c6be" },
+    "item": { "paddingVertical": 6, "paddingHorizontal": 8, "fontSize": 11, "color": "#333333", "selectedBackground": "#92A5C3", "selectedColor": "#ffffff", "iconSize": 16 },
+    "bottomControls": { "borderTop": "1px solid #c8c6be", "paddingVertical": 6, "paddingHorizontal": 8, "buttonSize": 24 }
+  },
+  "main": {
+    "background": "#ffffff",
+    "headerBar": { "height": 28, "backgroundGradient": ["#f5f5f5", "#e8e8e8"], "borderBottom": "1px solid #e0e0e0", "paddingHorizontal": 12, "paddingVertical": 6, "columnHeaderStyle": { "fontSize": 11, "color": "#666666" } },
+    "artistTitle": { "fontSize": 14, "paddingHorizontal": 12, "paddingVertical": 8, "borderBottom": "1px solid #e8e8e8" },
+    "artworkSection": { "width": 160, "padding": 16, "artworkSize": 112 },
+    "trackList": { "rowHeight": 28, "rowText": { "fontSize": 11 }, "selectedRowBackground": "#4B95E5", "selectedRowTextColor": "#ffffff", "alternatingRowBackgrounds": ["#F3F7FB", "#FFFFFF"], "separator": "1px solid #eeeeee", "columnWidths": { "number": 36, "name": 260, "time": 56, "album": 160, "genre": 80 } }
+  },
+  "rightSidebar": {
+    "width": 600,
+    "backgroundGradient": ["#e8eaf0", "#d8dce8", "#c8cce0"],
+    "borderLeft": "1px solid #b0aec8",
+    "header": { "fontSize": 12, "paddingVertical": 8, "paddingHorizontal": 12, "color": "#4a4a4a", "borderBottom": "1px solid #c0bed4" },
+    "content": { "padding": 12, "bodyText": { "fontSize": 11, "lineHeight": 1.4 } }
+  },
+  "statusBar": {
+    "height": 24,
+    "backgroundGradient": ["#5a5a5a", "#4a4a4a", "#3d3d3d"],
+    "borderTop": "1px solid #2d2d2d",
+    "statsText": { "fontSize": 11, "paddingLeft": 12 }
+  },
+  "colors": {
+    "selectionBlue": "#3d7bc2",
+    "nowPlayingFill": "#EAEDDB",
+    "nowPlayingBorder": "#D0D0D0",
+    "textPrimary": "#333333",
+    "textSecondary": "#666666",
+    "textMuted": "#4D4D4D",
+    "borderLight": "#e0e0e0",
+    "borderMedium": "#c0c0c0",
+    "borderSidebar": "#c8c6be"
+  },
+  "typography": {
+    "fontFamily": "Tahoma, Segoe UI, Arial, sans-serif",
+    "body": { "size": 11 },
+    "trackTitle": { "size": 13 },
+    "small": { "size": 10 }
+  }
+}

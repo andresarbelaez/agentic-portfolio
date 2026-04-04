@@ -1,0 +1,225 @@
+{
+  "description": "iTunes Windows reference — layout, spacing, colors, typography. Edit values to match reference; components can import or read this for a single source of truth.",
+  "source": "itunes-windows-full-playback-sidebar.png",
+  "window": {
+    "titleBar": {
+      "height": 26,
+      "style": "Windows XP Luna Silver — horizontal gradient light silver to darker silver",
+      "title": "iTunes",
+      "buttons": "minimize, restore, close (far right)",
+      "border": "thin subtle gray outline"
+    },
+    "menuBar": {
+      "height": 22,
+      "items": ["File", "Edit", "View", "Controls", "Store", "Advanced", "Help"],
+      "background": "matches title bar silver gradient"
+    }
+  },
+  "toolbar": {
+    "height": 68,
+    "background": "brushed metallic silver/gray horizontal gradient",
+    "paddingHorizontal": 12,
+    "gap": 8,
+    "left": {
+      "playbackButtons": {
+        "previous": { "size": 36, "shape": "circle", "style": "embossed gray" },
+        "playPause": { "size": 40, "shape": "circle", "style": "embossed gray (pause state shown)" },
+        "next": { "size": 36, "shape": "circle", "style": "embossed gray" },
+        "gap": 4
+      },
+      "volume": {
+        "sliderHeight": 16,
+        "sliderWidth": 80,
+        "filledColor": "light blue",
+        "trackColor": "light gray",
+        "speakerIcons": true,
+        "gapFromPlayback": 12
+      }
+    },
+    "center": {
+      "nowPlaying": {
+        "background": "#EAEDDB",
+        "backgroundGradient": "optional vertical: #F7F8F1 → #EAEDDB → #DFE2D0",
+        "border": "1px #D0D0D0",
+        "borderRadius": 8,
+        "maxWidth": 280,
+        "padding": { "top": 8, "right": 12, "bottom": 8, "left": 12 },
+        "text": {
+          "line1": { "content": "iTunes", "size": 10, "color": "#666666" },
+          "line2": { "content": "song title", "size": 13, "weight": "bold", "color": "#4D4D4D" },
+          "line3": { "content": "artist", "size": 11, "color": "#666666" }
+        },
+        "progressBar": {
+          "height": 10,
+          "trackColor": "#999999",
+          "filledColor": "light green",
+          "thumb": "small triangular slider",
+          "timeLeft": "0:21",
+          "timeRight": "-4:22",
+          "timeColor": "#666666",
+          "timeSize": 10
+        },
+        "controls": {
+          "playButton": "circular, dark gray, white play/pause icon",
+          "repeatButton": "circular, dark gray, white curved arrow"
+        }
+      }
+    },
+    "right": {
+      "viewModeButtons": {
+        "count": 3,
+        "size": 24,
+        "activeHighlight": "blue",
+        "gap": 2
+      },
+      "searchBar": {
+        "width": 120,
+        "height": 22,
+        "placeholder": "Search",
+        "leftEdge": "rounded",
+        "icon": "magnifying glass",
+        "background": "white/light gray"
+      },
+      "storeButton": { "size": 24, "icon": "house" },
+      "windowIcons": "three small icons (tray, visualizer, mini player)",
+      "gap": 8
+    }
+  },
+  "leftSidebar": {
+    "width": 192,
+    "background": "vertical gradient: light gray top → darker gray bottom",
+    "backgroundGradient": ["#f2f0eb", "#e5e3de", "#dddcd6"],
+    "sectionHeader": {
+      "fontSize": 10,
+      "fontWeight": "bold",
+      "textTransform": "uppercase",
+      "color": "#6d6d6d",
+      "paddingVertical": 6,
+      "paddingHorizontal": 8,
+      "borderBottom": "1px solid #c8c6be",
+      "expandIcon": "▼ expanded / ▶ collapsed"
+    },
+    "item": {
+      "paddingVertical": 6,
+      "paddingHorizontal": 8,
+      "fontSize": 11,
+      "color": "#333333",
+      "selectedBackground": "#3d7bc2",
+      "selectedColor": "#ffffff",
+      "iconSize": 16,
+      "gap": 8
+    },
+    "sections": ["LIBRARY", "STORE", "SHARED", "GENIUS", "PLAYLISTS"],
+    "bottomControls": {
+      "borderTop": "1px solid #c8c6be",
+      "paddingVertical": 6,
+      "paddingHorizontal": 8,
+      "buttons": ["plus", "shuffle", "loop", "cdBurn"],
+      "buttonSize": 24,
+      "style": "square, metallic borders"
+    }
+  },
+  "main": {
+    "background": "#ffffff",
+    "headerBar": {
+      "height": 28,
+      "background": "light gray gradient",
+      "backgroundGradient": ["#f5f5f5", "#e8e8e8"],
+      "borderBottom": "1px solid #e0e0e0",
+      "paddingHorizontal": 12,
+      "paddingVertical": 6,
+      "left": "All Artists dropdown",
+      "columnHeaders": ["Artwork", "Name ▲", "Time", "Album", "Genre"],
+      "columnHeaderStyle": { "fontSize": 11, "color": "#666666", "fontWeight": "normal" }
+    },
+    "artistTitle": {
+      "fontSize": 14,
+      "fontWeight": "bold",
+      "color": "#333333",
+      "paddingHorizontal": 12,
+      "paddingVertical": 8,
+      "borderBottom": "1px solid #e8e8e8"
+    },
+    "artworkSection": {
+      "width": 160,
+      "padding": 16,
+      "artworkSize": 112,
+      "artworkBorder": "thin gray",
+      "artworkShadow": "subtle drop shadow",
+      "artistNameBelow": { "fontSize": 12, "fontWeight": "600" },
+      "albumNameBelow": { "fontSize": 10, "color": "#666666" },
+      "rating": "five stars (gold when filled)"
+    },
+    "trackList": {
+      "rowHeight": 28,
+      "columns": ["checkbox", "number", "name", "time", "album", "genre"],
+      "rowText": { "fontSize": 11, "color": "#333333" },
+      "selectedRowBackground": "#cce0f5",
+      "selectedRowColor": "#333333",
+      "separator": "1px solid #eeeeee",
+      "columnSeparator": "thin vertical lines"
+    }
+  },
+  "rightSidebar": {
+    "width": 200,
+    "background": "light blue/gray vertical gradient",
+    "backgroundGradient": ["#e8eaf0", "#d8dce8", "#c8cce0"],
+    "borderLeft": "1px solid #b0aec8",
+    "header": {
+      "content": "Genius Sidebar",
+      "fontSize": 12,
+      "fontWeight": "bold",
+      "color": "#4a4a4a",
+      "paddingVertical": 8,
+      "paddingHorizontal": 12,
+      "borderBottom": "1px solid #c0bed4",
+      "textAlign": "center"
+    },
+    "content": {
+      "padding": 12,
+      "geniusGraphic": "purple atom-like logo, prominent",
+      "bodyText": { "fontSize": 11, "color": "#333333", "lineHeight": 1.4 },
+      "titleText": { "fontWeight": "bold" }
+    }
+  },
+  "statusBar": {
+    "height": 24,
+    "background": "dark gray horizontal gradient",
+    "backgroundGradient": ["#5a5a5a", "#4a4a4a", "#3d3d3d"],
+    "borderTop": "1px solid #2d2d2d",
+    "statsText": {
+      "content": "13 songs, 51,8 minutes, 57,2 MB",
+      "fontSize": 11,
+      "color": "white/light gray",
+      "paddingLeft": 12
+    },
+    "rightIcons": {
+      "genius": true,
+      "visualizer": true,
+      "miniPlayer": true,
+      "gap": 4,
+      "paddingRight": 8
+    }
+  },
+  "colors": {
+    "selectionBlue": "#3d7bc2",
+    "nowPlayingFill": "#EAEDDB",
+    "nowPlayingBorder": "#D0D0D0",
+    "sidebarSectionTitle": "#6d6d6d",
+    "textPrimary": "#333333",
+    "textSecondary": "#666666",
+    "textMuted": "#4D4D4D",
+    "borderLight": "#e0e0e0",
+    "borderMedium": "#c0c0c0",
+    "borderSidebar": "#c8c6be",
+    "tableHeaderBg": ["#f5f5f5", "#e8e8e8"],
+    "geniusGradient": ["#e8eaf0", "#d8dce8", "#c8cce0"]
+  },
+  "typography": {
+    "fontFamily": "Tahoma, Segoe UI, Arial, sans-serif",
+    "sectionTitle": { "size": 10, "weight": "bold", "transform": "uppercase" },
+    "body": { "size": 11 },
+    "trackTitle": { "size": 13, "weight": "bold" },
+    "small": { "size": 10 }
+  }
+}

@@ -17,6 +17,8 @@ export const ICON_PATHS = {
   setup: "/icons/setup.ico",
   /** Sign On window: next to ScreenName label */
   key: "/icons/key.ico",
+  /** Portfolio / presentation app (desktop icon and window) */
+  portfolio: "/icons/portfolio.ico",
 } as const;
 
 export type IconName = keyof typeof ICON_PATHS;

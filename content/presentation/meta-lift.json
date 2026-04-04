@@ -1,0 +1,17 @@
+{
+  "id": "meta-lift",
+  "title": "Design System for Meta Ads' Lift",
+  "subtitle": "Scaling consistency across a complex enterprise advertising platform.",
+  "albumArtUrl": "",
+  "tracks": [
+    {"id": "title", "title": "Title", "about": "Design System for Meta Ads' Lift — Scaling consistency across a complex enterprise advertising platform.", "work": [], "duration": "1:00"},
+    {"id": "problem", "title": "Problem", "about": "Context: Lift, Meta Ads, enterprise scale. Fragmentation — up to 10 UI patterns, confusion; product had scaled faster than its design foundation.", "work": [{"type": "image", "url": "/placeholder.svg", "caption": "Context or problem slide (placeholder)."}], "duration": "1:00"},
+    {"id": "insight", "title": "Insight", "about": "Product had scaled faster than its design foundation; consistency and shared patterns are prerequisites for quality at scale.", "work": [], "duration": "1:00"},
+    {"id": "approach", "title": "Approach", "about": "Lift Results Design System strategy — scalable component library, shared patterns, tokens, documentation. Modular, documented, code-ready.", "work": [], "duration": "1:00"},
+    {"id": "architecture", "title": "Architecture", "about": "Design system structure; component library architecture; documentation and token system.", "work": [], "duration": "1:00"},
+    {"id": "ux-challenges", "title": "UX challenges", "about": "Consistency at scale; reducing 10+ patterns to a single source of truth; adoption across teams.", "work": [], "duration": "1:00"},
+    {"id": "design-system", "title": "Design System", "about": "Lift Results Design System — component library, tokens, shared patterns, documentation.", "work": [{"type": "image", "url": "/placeholder.svg", "caption": "Component library or tokens (placeholder)."}], "duration": "1:00"},
+    {"id": "engineering-implementation", "title": "Engineering & implementation", "about": "Partnership with engineering; code alignment; documentation; handoff and implementation support.", "work": [{"type": "image", "url": "/placeholder.svg", "caption": "Docs or handoff artifacts (placeholder)."}], "duration": "1:00"},
+    {"id": "outcome", "title": "Outcome", "about": "Adoption strategy; impact: 90% compliance before org target, 13/16 improvements shipped, UX quality gains.", "work": [{"type": "video", "url": "/projects/lift_results_demo.mp4", "caption": "Lift Results demo."}], "duration": "1:00"}
+  ]
+}
